@@ -11,10 +11,16 @@ const hexColor = {
     }
     return true
   },
+  admin: {
+    components: {
+      Field: '/fields/ColorPickerField#ColorPickerField',
+    },
+  },
 }
 
 const colorModeFields = [
   { name: 'bgRoot', label: 'Base background', ...hexColor },
+  { name: 'text', label: 'Body text', ...hexColor },
   { name: 'surface1', label: 'Surface (level 1)', ...hexColor },
   { name: 'surface2', label: 'Surface (level 2)', ...hexColor },
   { name: 'primary', label: 'Primary action', ...hexColor },
@@ -34,6 +40,17 @@ export const Themes: CollectionConfig = {
     defaultColumns: ['name', 'isActive', 'updatedAt'],
     description:
       'Design tokens: color, typography, spacing. Multiple themes can exist; mark one active per site.',
+    livePreview: {
+      url: ({ data }) =>
+        data?.id
+          ? `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3010'}/preview/themes/${data.id}`
+          : null,
+      breakpoints: [
+        { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
+        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
   access: {
     read: authenticated,

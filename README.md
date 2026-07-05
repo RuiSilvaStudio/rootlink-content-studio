@@ -77,6 +77,32 @@ can delete records or flip which theme is active.
 The very first user created via `/admin` is exempt from these rules (Payload's
 built-in "create first user" bootstrap) and becomes an owner.
 
+## Live preview
+
+Themes and Templates have a "Live Preview" pane (the eye icon next to Save in their
+edit views): the form on the left, a real rendered view on the right, updating as you
+type -- no save required. Templates render using whichever Theme has `isActive`
+checked; Themes render their own style guide (colors, type scale, spacing, radii).
+Color fields use an actual color-picker swatch, not raw hex text.
+
+## Local dev gotchas
+
+- **Adding/changing a required field on a collection with existing rows will hang
+  `npm run dev`.** Payload's Postgres adapter auto-syncs schema in dev by prompting
+  `Accept warnings and push schema to database? (y/N)` on the *server* terminal --
+  since nothing is there to answer it, requests just hang forever with no error. If a
+  request seems stuck after a schema change, check the dev server's terminal output
+  first. Easiest fix in local dev (disposable data): `npm run db:down -- -v && npm run
+  db:up`, then re-run `npm run seed`. This also deletes any admin users you'd created,
+  so you'll need to go through "create first user" again.
+- `payload run <script>.ts` does **not** wait for async work in the script -- it exits
+  right after the dynamic `import()` resolves. Any script doing async work needs a
+  top-level `await` (see `scripts/seed.ts`), otherwise it silently does nothing.
+- The blank template's generated `eslint.config.mjs` (`FlatCompat` +
+  `next/core-web-vitals`) throws `Converting circular structure to JSON` under this
+  version of eslint-config-next. Fixed by importing `eslint-config-next/core-web-vitals`
+  and `eslint-config-next/typescript` directly instead of going through the compat shim.
+
 ## Deployment
 
 Not yet deployed. Planned: an isolated Docker container + Postgres on the same

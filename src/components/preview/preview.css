@@ -1,0 +1,195 @@
+/*
+ * Base styles for the visual preview surface (theme style guide + template
+ * rendering). Everything reads from the --cs-* custom properties set by
+ * theme-tokens.ts, so switching theme/mode instantly restyles this page.
+ */
+
+.cs-root {
+  background: var(--cs-color-bg);
+  color: var(--cs-color-text);
+  font-family: var(--cs-font-family), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100vh;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.cs-root,
+.cs-root * {
+  box-sizing: border-box;
+}
+
+.cs-surface-1 {
+  background: var(--cs-color-surface-1);
+}
+
+.cs-surface-2 {
+  background: var(--cs-color-surface-2);
+}
+
+.cs-h1 {
+  font-size: var(--cs-type-h1-size);
+  font-weight: var(--cs-type-h1-weight);
+  line-height: var(--cs-type-h1-lh);
+  margin: 0;
+}
+
+.cs-h2 {
+  font-size: var(--cs-type-h2-size);
+  font-weight: var(--cs-type-h2-weight);
+  line-height: var(--cs-type-h2-lh);
+  margin: 0;
+}
+
+.cs-h3 {
+  font-size: var(--cs-type-h3-size);
+  font-weight: var(--cs-type-h3-weight);
+  line-height: var(--cs-type-h3-lh);
+  margin: 0;
+}
+
+.cs-body {
+  font-size: var(--cs-type-body-size);
+  font-weight: var(--cs-type-body-weight);
+  line-height: var(--cs-type-body-lh);
+  margin: 0;
+}
+
+.cs-small {
+  font-size: var(--cs-type-small-size);
+  font-weight: var(--cs-type-small-weight);
+  line-height: var(--cs-type-small-lh);
+  margin: 0;
+}
+
+.cs-mono {
+  font-family: var(--cs-font-mono), ui-monospace, monospace;
+  font-size: var(--cs-type-mono-size);
+  font-weight: var(--cs-type-mono-weight);
+  line-height: var(--cs-type-mono-lh);
+}
+
+.cs-section {
+  padding: var(--cs-space-xl) var(--cs-space-lg);
+}
+
+.cs-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cs-space-xs);
+  padding: var(--cs-space-sm) var(--cs-space-lg);
+  border-radius: var(--cs-radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.cs-button--primary {
+  background: var(--cs-color-primary);
+  color: white;
+}
+
+.cs-button--secondary {
+  background: transparent;
+  border-color: var(--cs-color-primary);
+  color: var(--cs-color-primary);
+}
+
+.cs-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-space-md);
+  align-items: flex-start;
+  text-align: left;
+}
+
+.cs-hero__eyebrow {
+  color: var(--cs-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cs-hero__ctas {
+  display: flex;
+  gap: var(--cs-space-sm);
+  margin-top: var(--cs-space-sm);
+}
+
+.cs-hero__image {
+  border-radius: var(--cs-radius-lg);
+  max-width: 100%;
+  margin-top: var(--cs-space-md);
+}
+
+.cs-text-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-space-sm);
+}
+
+.cs-text-section--center {
+  align-items: center;
+  text-align: center;
+}
+
+.cs-image-with-text {
+  display: flex;
+  gap: var(--cs-space-lg);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cs-image-with-text--reverse {
+  flex-direction: row-reverse;
+}
+
+.cs-image-with-text__image {
+  flex: 1 1 320px;
+  border-radius: var(--cs-radius-lg);
+  max-width: 100%;
+}
+
+.cs-image-with-text__body {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-space-sm);
+}
+
+.cs-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cs-space-sm);
+  text-align: center;
+  border-radius: var(--cs-radius-lg);
+}
+
+.cs-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cs-space-xs);
+}
+
+.cs-swatch__chip {
+  width: 100%;
+  height: 64px;
+  border-radius: var(--cs-radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--cs-space-md);
+}
+
+.cs-empty {
+  border: 1px dashed var(--cs-color-surface-2);
+  border-radius: var(--cs-radius-md);
+  padding: var(--cs-space-lg);
+  text-align: center;
+  opacity: 0.7;
+}

@@ -27,6 +27,7 @@ async function seed() {
         isActive: true,
         colorsLight: {
           bgRoot: '#fafafa',
+          text: '#18181b',
           surface1: '#f4f4f5',
           surface2: '#e4e4e7',
           primary: '#10b981',
@@ -36,6 +37,7 @@ async function seed() {
         },
         colorsDark: {
           bgRoot: '#09090b',
+          text: '#fafafa',
           surface1: '#18181b',
           surface2: '#27272a',
           primary: '#10b981',

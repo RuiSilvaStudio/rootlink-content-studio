@@ -13,6 +13,17 @@ export const Templates: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'updatedAt'],
     description: 'Reusable page layouts built from blocks. Reorder, add, or remove blocks below.',
+    livePreview: {
+      url: ({ data }) =>
+        data?.id
+          ? `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3010'}/preview/templates/${data.id}`
+          : null,
+      breakpoints: [
+        { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
+        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
   access: {
     read: authenticated,

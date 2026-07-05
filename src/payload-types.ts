@@ -223,6 +223,7 @@ export interface Theme {
   isActive?: boolean | null;
   colorsLight: {
     bgRoot: string;
+    text: string;
     surface1: string;
     surface2: string;
     primary: string;
@@ -232,6 +233,7 @@ export interface Theme {
   };
   colorsDark: {
     bgRoot: string;
+    text: string;
     surface1: string;
     surface2: string;
     primary: string;
@@ -501,6 +503,7 @@ export interface ThemesSelect<T extends boolean = true> {
     | T
     | {
         bgRoot?: T;
+        text?: T;
         surface1?: T;
         surface2?: T;
         primary?: T;
@@ -512,6 +515,7 @@ export interface ThemesSelect<T extends boolean = true> {
     | T
     | {
         bgRoot?: T;
+        text?: T;
         surface1?: T;
         surface2?: T;
         primary?: T;
