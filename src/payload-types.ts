@@ -189,7 +189,7 @@ export interface Media {
 export interface MarketingCopy {
   id: number;
   /**
-   * A stable identifier, e.g. "homepage.hero.title". Do not change once in use.
+   * Must match a real RootLink i18n key, e.g. "home.hero_title" -- this is what gets overridden on the live site. Do not change once in use.
    */
   key: string;
   /**

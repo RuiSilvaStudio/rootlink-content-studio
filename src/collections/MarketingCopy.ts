@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated, ownerOnly } from '../access'
+import { anyone, authenticated, ownerOnly } from '../access'
 
 export const MarketingCopy: CollectionConfig = {
   slug: 'marketing-copy',
@@ -14,7 +14,10 @@ export const MarketingCopy: CollectionConfig = {
     description: 'Text strings used in marketing pages. "Key" identifies where a string is used.',
   },
   access: {
-    read: authenticated,
+    // Public read: the live site (and the preview-site clone) fetch these
+    // as plain copy overrides, same as RootLink's own real `/api/copy`
+    // endpoint -- no Content Studio login involved for reading.
+    read: anyone,
     create: authenticated,
     update: authenticated,
     delete: ownerOnly,
@@ -26,7 +29,8 @@ export const MarketingCopy: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'A stable identifier, e.g. "homepage.hero.title". Do not change once in use.',
+        description:
+          'Must match a real RootLink i18n key, e.g. "home.hero_title" -- this is what gets overridden on the live site. Do not change once in use.',
       },
     },
     {

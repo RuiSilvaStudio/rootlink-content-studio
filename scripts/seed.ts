@@ -113,7 +113,7 @@ async function seed() {
 
   const existingCopy = await payload.find({
     collection: 'marketing-copy',
-    where: { key: { equals: 'homepage.hero.title' } },
+    where: { key: { equals: 'home.hero_title' } },
     limit: 1,
   })
 
@@ -121,16 +121,17 @@ async function seed() {
     await payload.create({
       collection: 'marketing-copy',
       data: {
-        key: 'homepage.hero.title',
+        key: 'home.hero_title',
         page: 'Homepage',
         value: 'Grow resilience, together.',
         locale: 'en',
-        notes: 'Example entry -- shows the key/value/notes pattern for marketing copy.',
+        notes:
+          'Real RootLink key -- the homepage hero headline. Overrides the default "Find what feeds your land" wherever this key is read (the preview-site clone fetches these live).',
       },
     })
-    payload.logger.info('Seeded marketing copy: homepage.hero.title')
+    payload.logger.info('Seeded marketing copy: home.hero_title')
   } else {
-    payload.logger.info('Marketing copy "homepage.hero.title" already exists, skipping')
+    payload.logger.info('Marketing copy "home.hero_title" already exists, skipping')
   }
 
   payload.logger.info('Seed complete.')

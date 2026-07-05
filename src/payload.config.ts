@@ -23,6 +23,9 @@ export default buildConfig({
   },
   collections: [Users, Media, MarketingCopy, Themes, Templates],
   editor: lexicalEditor(),
+  // Allows the preview-site clone (a separate Next.js app/port) to fetch
+  // published content (marketing copy, themes) directly from this API.
+  cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3010', 'http://localhost:3011'],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

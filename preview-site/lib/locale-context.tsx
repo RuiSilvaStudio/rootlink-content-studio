@@ -2,10 +2,11 @@
 
 /**
  * Simplified clone of RootLink's real `lib/locale-context.tsx`.
- * Same t()/flatten/interpolate behavior, but with the `/api/copy` runtime
- * override fetch removed entirely -- this clone has no backend to call.
- * (Content Studio's own data will be wired in as a real override source
- * later; see repo README.)
+ * Same t()/flatten/interpolate behavior. The real component's `/api/copy`
+ * fetch (RootLink's own backend) is replaced with a fetch against Content
+ * Studio's public `marketing-copy` API -- same override-merge pattern, same
+ * i18n keys, different (and disposable, for now) source of truth. See repo
+ * README's "Integration with RootLink" section.
  */
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 
@@ -62,6 +63,29 @@ function detectBrowserLocale(): Locale {
   return "en";
 }
 
+type MarketingCopyDoc = { key: string; locale?: string; value: string };
+
+async function loadContentStudioOverrides(locale: Locale): Promise<Record<string, string>> {
+  const base = process.env.NEXT_PUBLIC_CONTENT_STUDIO_URL || "http://localhost:3010";
+  try {
+    const res = await fetch(
+      `${base}/api/marketing-copy?where[locale][equals]=${locale}&limit=200&depth=0`,
+      { cache: "no-store" },
+    );
+    if (!res.ok) return {};
+    const data = await res.json();
+    const docs: MarketingCopyDoc[] = data?.docs || [];
+    const overrides: Record<string, string> = {};
+    for (const doc of docs) {
+      if (doc.key) overrides[doc.key] = doc.value;
+    }
+    return overrides;
+  } catch {
+    // Content Studio unreachable -- fall back to static bundled copy only.
+    return {};
+  }
+}
+
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(FALLBACK_LOCALE);
   const [messages, setMessages] = useState<Record<string, string>>({});
@@ -80,9 +104,12 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     let cancelled = false;
     (async () => {
-      const base = flatten(await loadMessages(locale));
+      const [base, overrides] = await Promise.all([
+        loadMessages(locale).then(flatten),
+        loadContentStudioOverrides(locale),
+      ]);
       if (cancelled) return;
-      setMessages(base);
+      setMessages({ ...base, ...overrides });
       localStorage.setItem(LOCALE_KEY, locale);
       document.documentElement.lang = locale;
       setLoading(false);

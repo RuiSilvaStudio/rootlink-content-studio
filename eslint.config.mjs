@@ -30,7 +30,10 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ['.next/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
+    // preview-site/ is a fully separate app (own package.json, own Next
+    // version) with its own lint setup -- run `npm run lint` inside it
+    // directly rather than picking it up here.
+    ignores: ['.next/', 'src/payload-types.ts', 'src/payload-generated-schema.ts', 'preview-site/'],
   },
 ]
 
