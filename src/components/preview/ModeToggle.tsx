@@ -7,6 +7,10 @@ export function ModeToggle({
   mode: 'light' | 'dark'
   onChange: (mode: 'light' | 'dark') => void
 }) {
+  // This is editor "chrome", not part of the themed page it floats over --
+  // it must stay legible no matter what colors the theme being edited uses
+  // (including broken/incomplete ones). So its own colors are fixed and never
+  // derived from the theme/page underneath it.
   return (
     <div
       style={{
@@ -18,8 +22,8 @@ export function ModeToggle({
         gap: 4,
         padding: 4,
         borderRadius: 999,
-        background: 'rgba(0,0,0,0.06)',
-        backdropFilter: 'blur(6px)',
+        background: '#ffffff',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
       }}
     >
       {(['light', 'dark'] as const).map((m) => (
@@ -34,8 +38,8 @@ export function ModeToggle({
             borderRadius: 999,
             fontSize: 13,
             fontWeight: mode === m ? 700 : 400,
-            background: mode === m ? 'white' : 'transparent',
-            color: '#18181b',
+            background: mode === m ? '#18181b' : 'transparent',
+            color: mode === m ? '#ffffff' : '#18181b',
           }}
         >
           {m === 'light' ? 'Light' : 'Dark'}
