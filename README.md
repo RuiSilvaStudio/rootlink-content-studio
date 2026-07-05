@@ -121,6 +121,23 @@ fully separate compose stack/network/volumes from `rootlink/docker-compose.prod.
 This will be documented here once set up (see `rootlink/DEPLOY.md` for the pattern
 used on the platform side).
 
+## Next up (pick up here)
+
+**Priority 1, before anything else:** reconcile Content Studio's generic `Themes`
+color model with RootLink's real, fixed Tailwind palette (`primary-50..900`, `earth`,
+`rust`, exact hex values baked into `preview-site/tailwind.config.ts`). Right now
+editing a Theme in Payload does nothing to the clone's actual colors -- there's no
+bridge between "generic CSS-variable tokens" and "RootLink's real Tailwind config."
+This needs a real design decision (e.g.: do Themes' fields get reshaped to mirror
+RootLink's actual color scale structure instead of being site-agnostic? Does the
+clone move to CSS-variable-driven Tailwind colors instead of fixed hex? Something
+else?) before building further -- not just more plumbing. Explicitly sequenced
+before Pages/sitemap-tree and click-to-select-in-preview, since those would need
+rework if the theming model changes underneath them.
+
+After that: real Pages collection + sitemap-tree sidebar, then click-to-select
+directly in the live preview (see chat history for the full "Piece 1" framing).
+
 ## Integration with RootLink (future, not started)
 
 Deliberately deferred until this tool is built and used for real. Options on the table
