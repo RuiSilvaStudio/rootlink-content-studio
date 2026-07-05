@@ -69,6 +69,9 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    'marketing-copy': MarketingCopy;
+    themes: Theme;
+    templates: Template;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +81,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'marketing-copy': MarketingCopySelect<false> | MarketingCopySelect<true>;
+    themes: ThemesSelect<false> | ThemesSelect<true>;
+    templates: TemplatesSelect<false> | TemplatesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -150,7 +156,18 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Describe what the image shows -- read aloud by screen readers.
+   */
   alt: string;
+  /**
+   * Helps filter the media library by where an image is used.
+   */
+  tag?: ('hero' | 'icon' | 'background' | 'illustration' | 'logo' | 'other') | null;
+  /**
+   * Optional: where on the site this is used, for future reference.
+   */
+  usageNotes?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -162,6 +179,173 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * Text strings used in marketing pages. "Key" identifies where a string is used.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing-copy".
+ */
+export interface MarketingCopy {
+  id: number;
+  /**
+   * A stable identifier, e.g. "homepage.hero.title". Do not change once in use.
+   */
+  key: string;
+  /**
+   * Optional: which page/section this belongs to, for filtering, e.g. "Homepage".
+   */
+  page?: string | null;
+  value: string;
+  locale?: ('en' | 'pt') | null;
+  /**
+   * Optional context for other editors, e.g. "Shown only to logged-out visitors".
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Design tokens: color, typography, spacing. Multiple themes can exist; mark one active per site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "themes".
+ */
+export interface Theme {
+  id: number;
+  /**
+   * e.g. "RootLink Default"
+   */
+  name: string;
+  /**
+   * The active theme is the one currently live on the site.
+   */
+  isActive?: boolean | null;
+  colorsLight: {
+    bgRoot: string;
+    surface1: string;
+    surface2: string;
+    primary: string;
+    success: string;
+    warning: string;
+    error: string;
+  };
+  colorsDark: {
+    bgRoot: string;
+    surface1: string;
+    surface2: string;
+    primary: string;
+    success: string;
+    warning: string;
+    error: string;
+  };
+  /**
+   * Body/display font, e.g. "Inter" or "Geist".
+   */
+  fontFamily?: string | null;
+  /**
+   * Used for technical data / IDs.
+   */
+  fontFamilyMono?: string | null;
+  scale?:
+    | {
+        level: 'h1' | 'h2' | 'h3' | 'body' | 'small' | 'mono';
+        sizePx: number;
+        weight: '400' | '500' | '600' | '700';
+        lineHeight: number;
+        id?: string | null;
+      }[]
+    | null;
+  spacing?:
+    | {
+        /**
+         * e.g. sm, md, lg
+         */
+        token: string;
+        valuePx: number;
+        id?: string | null;
+      }[]
+    | null;
+  radii?: {
+    sm?: number | null;
+    md?: number | null;
+    lg?: number | null;
+    full?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Reusable page layouts built from blocks. Reorder, add, or remove blocks below.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "templates".
+ */
+export interface Template {
+  id: number;
+  /**
+   * Internal name, e.g. "Homepage" or "Donate landing page".
+   */
+  name: string;
+  /**
+   * Optional: what this template is for / where it is used.
+   */
+  description?: string | null;
+  /**
+   * Drag to reorder. This defines the structure of the page, top to bottom.
+   */
+  blocks?:
+    | (
+        | {
+            /**
+             * Small label above the headline, e.g. "New" or a section name. Optional.
+             */
+            eyebrow?: string | null;
+            headline: string;
+            subhead?: string | null;
+            image?: (number | null) | Media;
+            primaryCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            heading?: string | null;
+            body: string;
+            alignment?: ('left' | 'center') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textSection';
+          }
+        | {
+            image: number | Media;
+            imagePosition?: ('left' | 'right') | null;
+            heading?: string | null;
+            body: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageWithText';
+          }
+        | {
+            heading: string;
+            body?: string | null;
+            buttonLabel: string;
+            buttonHref: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+      )[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -194,6 +378,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'marketing-copy';
+        value: number | MarketingCopy;
+      } | null)
+    | ({
+        relationTo: 'themes';
+        value: number | Theme;
+      } | null)
+    | ({
+        relationTo: 'templates';
+        value: number | Template;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -267,6 +463,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  tag?: T;
+  usageNotes?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -278,6 +476,142 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "marketing-copy_select".
+ */
+export interface MarketingCopySelect<T extends boolean = true> {
+  key?: T;
+  page?: T;
+  value?: T;
+  locale?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "themes_select".
+ */
+export interface ThemesSelect<T extends boolean = true> {
+  name?: T;
+  isActive?: T;
+  colorsLight?:
+    | T
+    | {
+        bgRoot?: T;
+        surface1?: T;
+        surface2?: T;
+        primary?: T;
+        success?: T;
+        warning?: T;
+        error?: T;
+      };
+  colorsDark?:
+    | T
+    | {
+        bgRoot?: T;
+        surface1?: T;
+        surface2?: T;
+        primary?: T;
+        success?: T;
+        warning?: T;
+        error?: T;
+      };
+  fontFamily?: T;
+  fontFamilyMono?: T;
+  scale?:
+    | T
+    | {
+        level?: T;
+        sizePx?: T;
+        weight?: T;
+        lineHeight?: T;
+        id?: T;
+      };
+  spacing?:
+    | T
+    | {
+        token?: T;
+        valuePx?: T;
+        id?: T;
+      };
+  radii?:
+    | T
+    | {
+        sm?: T;
+        md?: T;
+        lg?: T;
+        full?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "templates_select".
+ */
+export interface TemplatesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              subhead?: T;
+              image?: T;
+              primaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        textSection?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              alignment?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageWithText?:
+          | T
+          | {
+              image?: T;
+              imagePosition?: T;
+              heading?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              buttonLabel?: T;
+              buttonHref?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

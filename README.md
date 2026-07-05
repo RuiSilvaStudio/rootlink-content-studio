@@ -45,6 +45,29 @@ automatically an `owner`.
 Stop the local database with `npm run db:down` (data persists in a Docker volume;
 delete the `content_studio_pgdata` volume to fully reset).
 
+### Example content
+
+`npm run seed` adds one example theme, template, and marketing copy entry, so the
+admin panel isn't empty on first look. Safe to re-run (skips anything that already
+exists) and safe to delete afterwards.
+
+## Content model (Phase 1)
+
+- **Marketing Copy** (`marketing-copy`) — key/value text entries (e.g.
+  `homepage.hero.title`), with a `page` and free-text `notes` field for context.
+- **Media** (`media`) — image uploads with alt text (required), a usage tag
+  (hero/icon/background/etc.), and optional usage notes.
+- **Themes** (`themes`) — design tokens: colors (light + dark), typography scale,
+  spacing scale, corner radii. Multiple themes can exist; one is marked `isActive`
+  (owner-only to change — it's the "what's actually live" switch).
+- **Templates** (`templates`) — reusable page layouts built from an ordered list of
+  blocks (Hero, Text Section, Image with Text, Call to Action — see `src/blocks/`).
+  This is intentionally a structured, reorderable list, not a freeform drag-and-drop
+  canvas.
+
+Everything above requires an authenticated `owner` or `editor` account; only `owner`
+can delete records or flip which theme is active.
+
 ## Roles
 
 - **owner** — full access, including creating/editing other users and changing roles.
