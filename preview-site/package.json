@@ -1,0 +1,28 @@
+{
+  "name": "rootlink-preview-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A visual clone of RootLink's real public frontend (marketing pages only, no backend/database), used as the live-preview render target for Content Studio. See README in the repo root for context -- this is expected to be temporary/disposable prototype scaffolding.",
+  "scripts": {
+    "dev": "next dev --port 3011",
+    "build": "next build",
+    "start": "next start --port 3011",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^0.447.0",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.0.0"
+  }
+}

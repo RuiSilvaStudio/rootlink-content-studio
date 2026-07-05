@@ -103,6 +103,16 @@ Color fields use an actual color-picker swatch, not raw hex text.
   version of eslint-config-next. Fixed by importing `eslint-config-next/core-web-vitals`
   and `eslint-config-next/typescript` directly instead of going through the compat shim.
 
+## Preview site (RootLink clone)
+
+`preview-site/` is a separate Next.js app (own `package.json`, own port `3011`,
+own `npm run dev`) -- a visual clone of RootLink's real public frontend
+(marketing pages only, no backend/database), copied from `rootlink/frontend`
+and adapted to run with no backend. It exists so Content Studio's live preview
+shows an authentically-RootLink page instead of a hand-built approximation.
+See `preview-site/README.md` for exactly what was copied vs. adapted, and why.
+Explicitly disposable prototype scaffolding -- see "Integration" below.
+
 ## Deployment
 
 Not yet deployed. Planned: an isolated Docker container + Postgres on the same
@@ -117,4 +127,5 @@ Deliberately deferred until this tool is built and used for real. Options on the
 at that point: RootLink's frontend fetches copy/tokens/templates from this tool's API,
 a one-way sync into RootLink's existing `copy_override`/`content_ui_override` tables, or
 this tool and the platform's existing lightweight inline editor simply coexist for
-different purposes.
+different purposes. The `preview-site/` clone is a stand-in for this decision, not a
+pre-commitment to any one of these paths -- see its own README.
