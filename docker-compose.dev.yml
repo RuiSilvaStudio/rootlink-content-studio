@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: content-studio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: content_studio
+      POSTGRES_PASSWORD: content_studio_dev_only
+      POSTGRES_DB: content_studio
+    ports:
+      - "5432:5432"
+    volumes:
+      - content_studio_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U content_studio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  content_studio_pgdata:
