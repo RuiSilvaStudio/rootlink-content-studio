@@ -9,6 +9,8 @@ interface FieldInfo {
   label: string;
   currentValue: string;
   element: HTMLElement;
+  csType: string | null;
+  linkUrl: string | null;
 }
 
 /**
@@ -80,6 +82,16 @@ export function EditableOverlay() {
       const raw = target.getAttribute("data-cs-field") || "";
       const [collection, ...keyParts] = raw.split(":");
       const key = keyParts.join(":");
+      const csType = target.getAttribute("data-cs-type");
+
+      // For buttons, find the parent <a> or <button> to get the link URL
+      let linkUrl: string | null = null;
+      if (csType === "button") {
+        const parentLink = target.closest("a, button") as HTMLAnchorElement | HTMLButtonElement | null;
+        if (parentLink && "href" in parentLink) {
+          linkUrl = (parentLink as HTMLAnchorElement).getAttribute("href");
+        }
+      }
 
       setActiveField({
         collection,
@@ -87,6 +99,8 @@ export function EditableOverlay() {
         label: resolveLabel(collection, key),
         currentValue: target.textContent?.trim() || "",
         element: target,
+        csType,
+        linkUrl,
       });
 
       const rect = target.getBoundingClientRect();

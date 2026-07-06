@@ -8,12 +8,14 @@ interface FieldInfo {
   label: string;
   currentValue: string;
   element: HTMLElement;
+  csType: string | null;
+  linkUrl: string | null;
 }
 
 /**
- * Floating edit panel that appears when you click an element.
- * RootLink's own design language: warm neutrals, serif labels, invisible
- * infrastructure. The panel feels like it belongs to the page itself.
+ * Floating edit panel. Adapts to element type:
+ * - Button (csType=button): shows link URL + text
+ * - Default: shows textarea only
  */
 export function EditPanel({
   field,
@@ -87,7 +89,7 @@ export function EditPanel({
                 fontFamily: "'Source Serif 4', Georgia, serif",
               }}
             >
-              {field.label}
+              {field.csType === "button" ? "Button" : field.label}
             </div>
             <div
               style={{
@@ -144,6 +146,28 @@ export function EditPanel({
               e.currentTarget.style.borderColor = "#cabda6";
             }}
           />
+
+          {field.csType === "button" && field.linkUrl ? (
+            <div
+              style={{
+                marginTop: 8,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 12px",
+                borderRadius: 6,
+                background: "#f5f0ea",
+                fontSize: 12,
+                fontFamily: "'JetBrains Mono', monospace",
+                color: "#917a56",
+              }}
+            >
+              <span style={{ opacity: 0.5 }}>→</span>
+              <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {field.linkUrl}
+              </span>
+            </div>
+          ) : null}
 
           {/* Character count */}
           <div
