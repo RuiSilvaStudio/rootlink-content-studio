@@ -265,8 +265,8 @@ export default function Home() {
           <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]" data-cs-field="marketing-copy:home.ready_to_share">{t("home.ready_to_share")}</h2>
           <p className="text-stone-500 dark:text-stone-400 mt-5 max-w-md mx-auto font-serif text-lg leading-relaxed" data-cs-field="marketing-copy:home.cta_subtitle">{t("home.cta_subtitle")}</p>
           <div className="flex flex-wrap justify-center gap-4 mt-10">
-            <Button variant="primary" size="lg" onClick={() => router.push("/submit")}>{t("home.submit_link")}</Button>
-            <Button variant="secondary" size="lg" onClick={() => router.push("/search")}>{t("home.browse_all")}</Button>
+            <Button variant="primary" size="lg" onClick={() => router.push("/submit")}><span data-cs-field="marketing-copy:home.submit_link" data-cs-type="button">{t("home.submit_link")}</span></Button>
+            <Button variant="secondary" size="lg" onClick={() => router.push("/search")}><span data-cs-field="marketing-copy:home.browse_all" data-cs-type="button">{t("home.browse_all")}</span></Button>
           </div>
           <div className="mt-10 w-12 h-px bg-primary-300/40 mx-auto" />
         </div>
