@@ -38,7 +38,7 @@ function BotanicalSvg() {
   );
 }
 
-function FooterCol({ heading, children }: { heading: string; children: React.ReactNode }) {
+function FooterCol({ heading, fieldKey, children }: { heading: string; fieldKey?: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ function FooterCol({ heading, children }: { heading: string; children: React.Rea
 
   return (
     <div>
-      <p className="hidden sm:block font-display text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-500 pb-3 border-b border-b-primary-300/50 dark:border-b-primary-700/40 w-fit min-w-10 mb-5">
+      <p className="hidden sm:block font-display text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-500 pb-3 border-b border-b-primary-300/50 dark:border-b-primary-700/40 w-fit min-w-10 mb-5" {...(fieldKey ? { 'data-cs-field': `marketing-copy:${fieldKey}` } : {})}>
         {heading}
       </p>
       <button
@@ -210,13 +210,13 @@ export function Footer() {
                 <span className="font-display text-lg font-semibold text-primary-700 dark:text-primary-300">RootLink</span>
               </Link>
 
-              <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-xs">{t("nav.footer_description")}</p>
+              <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-xs" data-cs-field="marketing-copy:nav.footer_description">{t("nav.footer_description")}</p>
 
               <div className="inline-flex items-center gap-1.5 mt-4 mb-4 px-3 py-1.5 rounded-full bg-primary-50 dark:bg-primary-900/20 border border-primary-200/40 dark:border-primary-800/30" aria-label={t("nav.open_source_community")}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary-600 dark:text-primary-400" aria-hidden="true">
                   <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
                 </svg>
-                <span className="font-display text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-primary-600 dark:text-primary-400">{t("nav.open_source_community")}</span>
+                <span className="font-display text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-primary-600 dark:text-primary-400" data-cs-field="marketing-copy:nav.open_source_community">{t("nav.open_source_community")}</span>
               </div>
 
               <nav className="flex items-center gap-2" aria-label="Social">
@@ -228,7 +228,7 @@ export function Footer() {
               </nav>
             </div>
 
-            <FooterCol heading={t("nav.resources")}>
+            <FooterCol heading={t("nav.resources")} fieldKey="nav.resources">
               {[
                 { href: "/submit", key: "nav.add_knowledge" },
                 { href: "/articles", key: "nav.articles" },
@@ -247,7 +247,7 @@ export function Footer() {
               </a>
             </FooterCol>
 
-            <FooterCol heading={t("nav.community")}>
+            <FooterCol heading={t("nav.community")} fieldKey="nav.community">
               {[
                 { href: "/leaderboard", key: "nav.leaderboard" },
                 { href: "/donate", key: "nav.support_us" },

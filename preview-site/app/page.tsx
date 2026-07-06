@@ -261,9 +261,9 @@ export default function Home() {
       <section className="px-4 sm:px-8 py-24 sm:py-32">
         <div className="max-w-3xl mx-auto text-center">
           <div className="w-12 h-px bg-primary-300/40 mx-auto mb-8" />
-          <Badge variant="sage" className="mb-5">{t("home.join_community")}</Badge>
-          <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]">{t("home.ready_to_share")}</h2>
-          <p className="text-stone-500 dark:text-stone-400 mt-5 max-w-md mx-auto font-serif text-lg leading-relaxed">{t("home.cta_subtitle")}</p>
+          <Badge variant="sage" className="mb-5"><span data-cs-field="marketing-copy:home.join_community">{t("home.join_community")}</span></Badge>
+          <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]" data-cs-field="marketing-copy:home.ready_to_share">{t("home.ready_to_share")}</h2>
+          <p className="text-stone-500 dark:text-stone-400 mt-5 max-w-md mx-auto font-serif text-lg leading-relaxed" data-cs-field="marketing-copy:home.cta_subtitle">{t("home.cta_subtitle")}</p>
           <div className="flex flex-wrap justify-center gap-4 mt-10">
             <Button variant="primary" size="lg" onClick={() => router.push("/submit")}>{t("home.submit_link")}</Button>
             <Button variant="secondary" size="lg" onClick={() => router.push("/search")}>{t("home.browse_all")}</Button>
