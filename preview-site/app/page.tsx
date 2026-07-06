@@ -85,12 +85,12 @@ export default function Home() {
 
   if (blocksLoading) return null;
 
-  if (pageBlocks && pageBlocks.length > 0) {
-    return <RenderBlocks blocks={pageBlocks} />;
-  }
+  const hasBlocks = pageBlocks && pageBlocks.length > 0;
 
   return (
     <div>
+      {hasBlocks ? <RenderBlocks blocks={pageBlocks} /> : null}
+
       {/* ========== HERO — editorial split ========== */}
       <section className="relative hero-grad min-h-[90vh] flex items-center px-4 sm:px-8 pt-16 overflow-hidden">
         <HeroParticleCanvas />
