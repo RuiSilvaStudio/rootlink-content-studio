@@ -109,20 +109,20 @@ export const Themes: CollectionConfig = {
       },
     },
     {
+      name: 'importExport',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/fields/PaletteImportExport#PaletteImportExport',
+        },
+      },
+    },
+    {
       type: 'tabs',
       tabs: [
         {
           label: 'Palette',
           fields: [
-            {
-              name: 'importExport',
-              type: 'ui',
-              admin: {
-                components: {
-                  Field: '/fields/PaletteImportExport#PaletteImportExport',
-                },
-              },
-            },
             {
               name: 'palette',
               type: 'group',

@@ -29,54 +29,38 @@ export function PaletteImportExport(props: UIFieldClientProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [status, setStatus] = useState<string | null>(null)
 
-  // path is this ui field's own path, e.g. "palette.importExport"
+  // path is this ui field's own path, e.g. "importExport" at root level
   const palettePath = path.split('.').slice(0, -1).join('.')
+  const isRoot = palettePath === ''
 
   const handleExport = () => {
-    const data = getData() as Record<string, unknown>
+    const raw = getData()
 
-    // Payload's getData() returns a flat object with dot-notation keys
-    // (e.g. "palette.primary.seed"), not nested objects. Build the
-    // palette by extracting all keys under the palette.* prefix.
-    const prefix = palettePath + '.'
-    const paletteData: Record<string, unknown> = {}
-    let hasKeys = false
-    for (const [key, value] of Object.entries(data)) {
-      if (key.startsWith(prefix)) {
-        const subKey = key.slice(prefix.length)
-        paletteData[subKey] = value
-        hasKeys = true
-      }
+    // At root level (isRoot), getData() already contains the full document.
+    // Otherwise navigate into the parent path.
+    let data: Record<string, unknown>
+    if (isRoot) {
+      data = raw as Record<string, unknown>
+    } else {
+      const nested = palettePath.split('.').reduce<unknown>((acc, key) => {
+        if (acc && typeof acc === 'object') return (acc as Record<string, unknown>)[key]
+        return undefined
+      }, raw)
+      data = (nested && typeof nested === 'object' ? nested : {}) as Record<string, unknown>
     }
 
-    if (!hasKeys) {
+    if (data && typeof data === 'object' && Object.keys(data).length > 1) {
+      const { importExport: _omit, ...clean } = data
+      const blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'theme.json'
+      a.click()
+      URL.revokeObjectURL(url)
+    } else {
       setStatus('Nothing to export yet — save the page first, then try again.')
-      return
     }
-
-    // Convert flat "primary.seed", "primary.scale.s50", etc. back to nested
-    function unflatten(obj: Record<string, unknown>): Record<string, unknown> {
-      const result: Record<string, unknown> = {}
-      for (const [key, value] of Object.entries(obj)) {
-        const parts = key.split('.')
-        let current = result
-        for (let i = 0; i < parts.length - 1; i++) {
-          if (!current[parts[i]]) current[parts[i]] = {}
-          current = current[parts[i]] as Record<string, unknown>
-        }
-        current[parts[parts.length - 1]] = value
-      }
-      return result
-    }
-
-    const clean = unflatten(paletteData)
-    const blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'theme-palette.json'
-    a.click()
-    URL.revokeObjectURL(url)
   }
 
   const handleImportClick = () => fileInputRef.current?.click()
