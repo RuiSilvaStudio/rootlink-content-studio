@@ -11,6 +11,7 @@
     "db:up": "docker compose -f docker-compose.dev.yml up -d",
     "db:down": "docker compose -f docker-compose.dev.yml down",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts",
+    "sync": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/sync-from-clone.ts",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
