@@ -107,7 +107,12 @@ Color fields use an actual color-picker swatch, not raw hex text.
   version of eslint-config-next. Fixed by importing `eslint-config-next/core-web-vitals`
   and `eslint-config-next/typescript` directly instead of going through the compat shim.
 
-## Preview site (RootLink clone)
+## Session handoff
+
+`SESSION_NOTES.md` is the single-file handoff for any new agent picking up
+this project. Read it first — it covers architecture decisions, known bugs,
+file locations, and gotchas that only exist in chat history otherwise.
+Update it at the end of every session.
 
 `preview-site/` is a separate Next.js app (own `package.json`, own port `3011`,
 own `npm run dev`) -- a visual clone of RootLink's real public frontend
