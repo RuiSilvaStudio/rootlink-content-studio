@@ -21,8 +21,15 @@ function flatten(obj: unknown, prefix = ''): void {
 }
 flatten(RAW)
 
-const KEYS = Object.keys(FLAT).sort()
-const MAX_VISIBLE = 8
+const ALL_KEYS = Object.keys(FLAT).sort()
+
+// Public-facing marketing/navigation keys -- these make sense to edit.
+// Everything else is admin UI or internal strings.
+const MARKETING_PREFIXES = ['home.', 'nav.', 'create.']
+const MARKETING_KEYS = ALL_KEYS.filter((k) => MARKETING_PREFIXES.some((p) => k.startsWith(p)))
+const OTHER_KEYS = ALL_KEYS.filter((k) => !MARKETING_PREFIXES.some((p) => k.startsWith(p)))
+
+const MAX_VISIBLE = 12
 
 export function I18nKeyPicker(props: TextFieldClientProps) {
   const { path: pathFromProps } = props
@@ -30,13 +37,16 @@ export function I18nKeyPicker(props: TextFieldClientProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
 
+  const [showAll, setShowAll] = useState(false)
+
   const filtered = useMemo(() => {
-    if (!search) return KEYS.slice(0, MAX_VISIBLE)
+    const pool = showAll || search ? ALL_KEYS : MARKETING_KEYS.slice(0, MAX_VISIBLE)
+    if (!search) return pool.slice(0, search ? 30 : (showAll ? 50 : MAX_VISIBLE))
     const q = search.toLowerCase()
-    return KEYS.filter(
-      (k) => k.toLowerCase().includes(q) || (FLAT[k] || '').toLowerCase().includes(q),
-    ).slice(0, 30)
-  }, [search])
+    return pool
+      .filter((k) => k.toLowerCase().includes(q) || (FLAT[k] || '').toLowerCase().includes(q))
+      .slice(0, 30)
+  }, [search, showAll])
 
   const selectedText = value && FLAT[value] ? `${value} — ${FLAT[value]}` : (value || '')
 
@@ -163,6 +173,30 @@ export function I18nKeyPicker(props: TextFieldClientProps) {
                 </div>
               </button>
             ))
+          )}
+          {!search && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowAll((v) => !v)
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                border: 'none',
+                background: 'var(--theme-elevation-50)',
+                borderTop: '1px solid var(--theme-elevation-100)',
+                cursor: 'pointer',
+                padding: '10px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                opacity: 0.7,
+                textAlign: 'center',
+              }}
+            >
+              {showAll ? 'Show marketing keys only' : `Show all ${OTHER_KEYS.length}+ keys`}
+            </button>
           )}
         </div>
       )}
