@@ -141,8 +141,14 @@ export const Themes: CollectionConfig = {
             {
               name: 'fontFamily',
               type: 'text',
-              defaultValue: 'Inter',
-              admin: { description: 'Body/display font, e.g. "Inter" or "Geist".' },
+              defaultValue: 'Source Serif 4',
+              admin: { description: 'Body/serif font, e.g. "Source Serif 4" or "Lora".' },
+            },
+            {
+              name: 'fontFamilyDisplay',
+              type: 'text',
+              defaultValue: 'Fraunces',
+              admin: { description: 'Display/heading font, e.g. "Fraunces" or "Playfair Display".' },
             },
             {
               name: 'fontFamilyMono',
@@ -197,9 +203,10 @@ export const Themes: CollectionConfig = {
               name: 'radii',
               type: 'group',
               fields: [
-                { name: 'sm', type: 'number', defaultValue: 4 },
-                { name: 'md', type: 'number', defaultValue: 8 },
+                { name: 'sm', type: 'number', defaultValue: 8 },
+                { name: 'md', type: 'number', defaultValue: 12 },
                 { name: 'lg', type: 'number', defaultValue: 16 },
+                { name: 'xl2', type: 'number', defaultValue: 16 },
                 { name: 'full', type: 'number', defaultValue: 9999 },
               ],
             },

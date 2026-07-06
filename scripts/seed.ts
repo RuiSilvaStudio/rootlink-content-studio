@@ -75,7 +75,8 @@ async function seed() {
           },
           cream: '#f8f6f2',
         },
-        fontFamily: 'Inter',
+        fontFamily: 'Source Serif 4',
+        fontFamilyDisplay: 'Fraunces',
         fontFamilyMono: 'JetBrains Mono',
         scale: [
           { level: 'h1', sizePx: 30, weight: '700', lineHeight: 1.2 },
@@ -92,7 +93,7 @@ async function seed() {
           { token: 'lg', valuePx: 24 },
           { token: 'xl', valuePx: 32 },
         ],
-        radii: { sm: 4, md: 8, lg: 16, full: 9999 },
+        radii: { sm: 8, md: 12, lg: 16, xl2: 16, full: 9999 },
       },
     })
     payload.logger.info('Seeded theme: RootLink Default')

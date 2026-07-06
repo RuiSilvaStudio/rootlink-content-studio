@@ -270,9 +270,13 @@ export interface Theme {
     cream: string;
   };
   /**
-   * Body/display font, e.g. "Inter" or "Geist".
+   * Body/serif font, e.g. "Source Serif 4" or "Lora".
    */
   fontFamily?: string | null;
+  /**
+   * Display/heading font, e.g. "Fraunces" or "Playfair Display".
+   */
+  fontFamilyDisplay?: string | null;
   /**
    * Used for technical data / IDs.
    */
@@ -300,6 +304,7 @@ export interface Theme {
     sm?: number | null;
     md?: number | null;
     lg?: number | null;
+    xl2?: number | null;
     full?: number | null;
   };
   updatedAt: string;
@@ -590,6 +595,7 @@ export interface ThemesSelect<T extends boolean = true> {
         cream?: T;
       };
   fontFamily?: T;
+  fontFamilyDisplay?: T;
   fontFamilyMono?: T;
   scale?:
     | T
@@ -613,6 +619,7 @@ export interface ThemesSelect<T extends boolean = true> {
         sm?: T;
         md?: T;
         lg?: T;
+        xl2?: T;
         full?: T;
       };
   updatedAt?: T;

@@ -62,7 +62,17 @@
 
   --color-cream: var(--rl-cream);
 
-  --radius-xl2: 16px;
+  /* Typography */
+  --font-display: var(--rl-font-display);
+  --font-serif: var(--rl-font-serif);
+
+  /* Radii (in px -- Tailwind v4 uses raw pixel values for --radius-*) */
+  --radius-xs: var(--rl-radius-xs);
+  --radius-sm: var(--rl-radius-sm);
+  --radius-md: var(--rl-radius-md);
+  --radius-lg: var(--rl-radius-lg);
+  --radius-xl2: var(--rl-radius-xl2);
+  --radius-full: var(--rl-radius-full);
 
   --animate-fade-in: fade-in 0.6s ease-out forwards;
   --animate-fade-in-up: fade-in-up 0.7s ease-out forwards;
@@ -410,6 +420,18 @@
   --rl-rust-900: #4a2a1c;
 
   --rl-cream: #f8f6f2;
+
+  /* Typography defaults -- matching RootLink's real design */
+  --rl-font-display: Fraunces, Georgia, serif;
+  --rl-font-serif: Source Serif 4, Georgia, serif;
+
+  /* Radii defaults -- matching RootLink's real design */
+  --rl-radius-xs: 6px;
+  --rl-radius-sm: 8px;
+  --rl-radius-md: 12px;
+  --rl-radius-lg: 16px;
+  --rl-radius-xl2: 16px;
+  --rl-radius-full: 9999px;
 }
 
 @layer base {
