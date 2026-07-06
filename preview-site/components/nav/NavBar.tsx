@@ -87,7 +87,7 @@ export function NavBar() {
               href="/auth/login"
               className="hidden lg:inline-flex ml-1 px-4 py-1.5 rounded-xl2 bg-primary-600 text-cream text-sm font-display font-semibold hover:bg-primary-500 transition-colors shadow-xs shadow-primary-600/20"
             >
-              <span>{t("nav.sign_in")}</span>
+              <span data-cs-field="marketing-copy:nav.sign_in" data-cs-type="button">{t("nav.sign_in")}</span>
             </Link>
           </div>
         </div>

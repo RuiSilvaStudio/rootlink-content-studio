@@ -175,22 +175,22 @@ export default function Home() {
               <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                 <Calendar className="w-6 h-6 text-primary-600 dark:text-primary-400" />
               </div>
-              <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100">{t("home.gardening_calendar")}</h3>
-              <p className="text-stone-500 dark:text-stone-300 mt-3 font-serif text-sm leading-relaxed">{t("home.gardening_calendar_desc")}</p>
+              <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100" data-cs-field="marketing-copy:home.gardening_calendar">{t("home.gardening_calendar")}</h3>
+              <p className="text-stone-500 dark:text-stone-300 mt-3 font-serif text-sm leading-relaxed" data-cs-field="marketing-copy:home.gardening_calendar_desc">{t("home.gardening_calendar_desc")}</p>
             </Link>
             <Link href="/tools/monthly-checklist" className="card-lift p-8 sm:p-10 group">
               <div className="w-12 h-12 rounded-xl bg-earth-100/60 dark:bg-earth-900/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                 <CheckSquare className="w-6 h-6 text-earth-600 dark:text-earth-400" />
               </div>
-              <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100">{t("home.monthly_checklist")}</h3>
-              <p className="text-stone-500 dark:text-stone-300 mt-3 font-serif text-sm leading-relaxed">{t("home.monthly_checklist_desc")}</p>
+              <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100" data-cs-field="marketing-copy:home.monthly_checklist">{t("home.monthly_checklist")}</h3>
+              <p className="text-stone-500 dark:text-stone-300 mt-3 font-serif text-sm leading-relaxed" data-cs-field="marketing-copy:home.monthly_checklist_desc">{t("home.monthly_checklist_desc")}</p>
             </Link>
             <Link href="/tools/irrigation-calculator" className="card-lift p-8 sm:p-10 group">
               <div className="w-12 h-12 rounded-xl bg-sky-100/60 dark:bg-sky-900/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                 <Droplets className="w-6 h-6 text-sky-600 dark:text-sky-400" />
               </div>
-              <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100">{t("home.irrigation_calculator")}</h3>
-              <p className="text-stone-500 dark:text-stone-300 mt-3 font-serif text-sm leading-relaxed">{t("home.irrigation_calculator_desc")}</p>
+              <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100" data-cs-field="marketing-copy:home.irrigation_calculator">{t("home.irrigation_calculator")}</h3>
+              <p className="text-stone-500 dark:text-stone-300 mt-3 font-serif text-sm leading-relaxed" data-cs-field="marketing-copy:home.irrigation_calculator_desc">{t("home.irrigation_calculator_desc")}</p>
             </Link>
           </div>
         </div>
@@ -215,8 +215,8 @@ export default function Home() {
                 <div className={`w-12 h-12 rounded-xl ${bg === "earth" ? "bg-earth-100/50 dark:bg-earth-900/30" : "bg-primary-100 dark:bg-primary-900/30"} flex items-center justify-center mb-5 transition`}>
                   <Icon className={`w-6 h-6 ${bg === "earth" ? "text-earth-600 dark:text-earth-400" : "text-primary-600 dark:text-primary-400"}`} />
                 </div>
-                <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100 mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition">{t(titleKey)}</h3>
-                <p className="text-stone-500 dark:text-stone-400 font-serif text-sm leading-relaxed mb-5">{t(descKey)}</p>
+                <h3 className="text-xl font-display font-semibold text-stone-800 dark:text-stone-100 mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition" data-cs-field={`marketing-copy:${titleKey}`}>{t(titleKey)}</h3>
+                <p className="text-stone-500 dark:text-stone-400 font-serif text-sm leading-relaxed mb-5" data-cs-field={`marketing-copy:${descKey}`}>{t(descKey)}</p>
                 <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 group-hover:gap-2.5 transition-all">
                   {t("home.explore")} <span className="text-lg leading-none">→</span>
                 </span>
@@ -230,8 +230,8 @@ export default function Home() {
       <section className="px-4 sm:px-8 py-24 sm:py-32 bg-primary-50/40 noise-bg">
         <div className="max-w-6xl mx-auto">
           <div className="mb-16">
-            <Badge variant="green" className="mb-5">{t("home.recently_indexed")}</Badge>
-            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]">{t("home.from_community")}</h2>
+            <Badge variant="green" className="mb-5"><span data-cs-field="marketing-copy:home.recently_indexed">{t("home.recently_indexed")}</span></Badge>
+            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]" data-cs-field="marketing-copy:home.from_community">{t("home.from_community")}</h2>
             <div className="mt-5 w-16 h-0.5 bg-primary-300/40 rounded-full" />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">

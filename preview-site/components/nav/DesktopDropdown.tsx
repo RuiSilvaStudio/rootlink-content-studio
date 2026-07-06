@@ -49,7 +49,7 @@ export function DesktopDropdown({ group }: { group: NavGroup }) {
             : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-primary-50/40 dark:hover:bg-primary-900/15"
         }`}
       >
-        {t(group.labelKey)}
+        <span data-cs-field={`marketing-copy:${group.labelKey}`}>{t(group.labelKey)}</span>
         <ChevronDown
           className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${open ? "rotate-180 opacity-100" : ""}`}
         />

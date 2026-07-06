@@ -236,7 +236,7 @@ export function Footer() {
                 { href: "/tools", key: "nav.tools" },
               ].map(({ href, key }) => (
                 <Link key={href} href={href} className="block text-[0.9375rem] text-stone-600 dark:text-stone-400 py-1.75 leading-snug hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
-                  {t(key)}
+                  <span data-cs-field={`marketing-copy:${key}`}>{t(key)}</span>
                 </Link>
               ))}
               <a href="https://github.com/RuiSilvaStudio/RootLink" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[0.9375rem] text-stone-600 dark:text-stone-400 py-1.75 hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
@@ -255,7 +255,7 @@ export function Footer() {
                 { href: "/network", key: "nav.network" },
               ].map(({ href, key }) => (
                 <Link key={href} href={href} className="block text-[0.9375rem] text-stone-600 dark:text-stone-400 py-1.75 leading-snug hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
-                  {t(key)}
+                  <span data-cs-field={`marketing-copy:${key}`}>{t(key)}</span>
                 </Link>
               ))}
             </FooterCol>
