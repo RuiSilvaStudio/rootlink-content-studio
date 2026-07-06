@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 type PageNode = {
@@ -59,6 +59,11 @@ export function ContentStudioDashboard(_props: Record<string, unknown>) {
   const [rightTab, setRightTab] = useState<ToolTab>('theme')
   const [leftOpen, setLeftOpen] = useState(true)
   const [rightOpen, setRightOpen] = useState(true)
+  const [selectedField, setSelectedField] = useState<{
+    collection: string; key: string; label: string; currentValue: string
+    csType?: string; linkUrl?: string
+  } | null>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const cloneUrl = process.env.NEXT_PUBLIC_CLONE_URL || 'http://localhost:3011'
 
   useEffect(() => {
@@ -66,6 +71,18 @@ export function ContentStudioDashboard(_props: Record<string, unknown>) {
       .then((r) => r.json())
       .then((d) => setPages(buildTree(d.docs || [])))
       .catch(() => {})
+  }, [])
+
+  // Listen for field-level postMessages from the clone iframe
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'content-studio:select-field') {
+        setSelectedField(e.data)
+        setRightTab('theme') // switch to editing context
+      }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
   }, [])
 
   const sidebar = { width: 260, background: 'var(--theme-elevation-50)', borderRight: '1px solid var(--theme-elevation-100)', overflow: 'auto' }
@@ -95,6 +112,7 @@ export function ContentStudioDashboard(_props: Record<string, unknown>) {
       {/* ── CENTER: clone iframe ──────────────────────────── */}
       <div style={{ flex: 1, position: 'relative', background: '#e4e4e7' }}>
         <iframe
+          ref={iframeRef}
           src={`${cloneUrl}${activeSlug || '/'}?edit=1`}
           style={{ width: '100%', height: '100%', border: 'none' }}
           title="Content Studio Preview"
@@ -130,11 +148,103 @@ export function ContentStudioDashboard(_props: Record<string, unknown>) {
             <button onClick={() => setRightOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', opacity: 0.5, fontSize: 14 }}>×</button>
           </div>
           <div style={{ padding: 12 }}>
-            {rightTab === 'theme' && <QuickThemePanel />}
-            {rightTab === 'fonts' && <QuickFontsPanel />}
-            {rightTab === 'media' && <QuickMediaPanel />}
-            {rightTab === 'templates' && <QuickTemplatesPanel />}
+            {selectedField ? (
+              <InlineFieldEditor
+                field={selectedField}
+                onClose={() => setSelectedField(null)}
+                onSaved={() => {
+                  // Refresh the iframe to reflect changes
+                  if (iframeRef.current) {
+                    iframeRef.current.src = iframeRef.current.src;
+                  }
+                }}
+              />
+            ) : (
+              <>
+                {rightTab === 'theme' && <QuickThemePanel />}
+                {rightTab === 'fonts' && <QuickFontsPanel />}
+                {rightTab === 'media' && <QuickMediaPanel />}
+                {rightTab === 'templates' && <QuickTemplatesPanel />}
+              </>
+            )}
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function InlineFieldEditor({ field, onClose, onSaved }: {
+  field: { collection: string; key: string; label: string; currentValue: string; csType?: string; linkUrl?: string }
+  onClose: () => void
+  onSaved: () => void
+}) {
+  const [value, setValue] = useState(field.currentValue)
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  const handleSave = async () => {
+    setStatus('saving')
+    try {
+      if (field.collection === 'marketing-copy') {
+        // Find existing
+        const searchRes = await fetch(`/api/marketing-copy?where[key][equals]=${encodeURIComponent(field.key)}&limit=1`)
+        const searchData = await searchRes.json()
+        const existing = searchData?.docs?.[0]
+        const method = existing ? 'PATCH' : 'POST'
+        const url = existing ? `/api/marketing-copy/${existing.id}` : '/api/marketing-copy'
+        const body = existing
+          ? { value, locale: 'en' }
+          : { key: field.key, value, locale: 'en' }
+        await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+        setStatus('saved')
+        setTimeout(() => { setStatus('idle'); onSaved() }, 800)
+      }
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>{field.csType === 'button' ? 'Button' : field.label}</div>
+          <div style={{ fontSize: 11, opacity: 0.5, fontFamily: 'monospace' }}>{field.key}</div>
+        </div>
+        <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', opacity: 0.5 }}>×</button>
+      </div>
+
+      <textarea
+        value={value}
+        onChange={(e) => { setValue(e.target.value); if (status === 'saved') setStatus('idle') }}
+        rows={3}
+        style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid var(--theme-elevation-200)', fontSize: 13, resize: 'vertical', fontFamily: 'inherit' }}
+      />
+
+      {field.csType === 'button' && field.linkUrl ? (
+        <div style={{ marginTop: 8, padding: '6px 10px', borderRadius: 4, background: 'var(--theme-elevation-50)', fontSize: 11, fontFamily: 'monospace', opacity: 0.7 }}>
+          → {field.linkUrl}
+        </div>
+      ) : null}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+        <span style={{ fontSize: 11, opacity: 0.5 }}>{value.length} chars</span>
+        <button
+          onClick={handleSave}
+          disabled={status === 'saving' || value === field.currentValue}
+          style={{
+            border: 'none', borderRadius: 6, padding: '6px 16px', fontSize: 12, fontWeight: 600, cursor: value === field.currentValue ? 'default' : 'pointer',
+            background: status === 'saved' ? '#10b981' : status === 'error' ? '#ef4444' : value === field.currentValue ? 'var(--theme-elevation-100)' : 'var(--theme-elevation-900)',
+            color: status === 'saved' || status === 'error' ? '#fff' : value === field.currentValue ? 'var(--theme-elevation-400)' : '#fff',
+          }}
+        >
+          {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : status === 'error' ? 'Error' : 'Save'}
+        </button>
+      </div>
+
+      {field.collection === 'marketing-copy' && (
+        <div style={{ marginTop: 12 }}>
+          <Link href="/admin/collections/marketing-copy" style={{ fontSize: 11, opacity: 0.5 }}>Open all copy →</Link>
         </div>
       )}
     </div>

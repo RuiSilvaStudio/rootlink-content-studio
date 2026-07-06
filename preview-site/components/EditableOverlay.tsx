@@ -83,6 +83,7 @@ export function EditableOverlay() {
       const [collection, ...keyParts] = raw.split(":");
       const key = keyParts.join(":");
       const csType = target.getAttribute("data-cs-type");
+      const rect = target.getBoundingClientRect();
 
       // For buttons, find the parent <a> or <button> to get the link URL
       let linkUrl: string | null = null;
@@ -93,6 +94,26 @@ export function EditableOverlay() {
         }
       }
 
+      const label = resolveLabel(collection, key);
+      const msg = {
+        type: "content-studio:select-field",
+        collection,
+        key,
+        label,
+        csType: csType || undefined,
+        linkUrl: linkUrl || undefined,
+        currentValue: target.textContent?.trim() || "",
+        rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+      };
+
+      // If we're inside the Content Studio dashboard, send a postMessage
+      // so the right sidebar can handle editing with proper auth.
+      if (window.parent !== window) {
+        window.parent.postMessage(msg, "*");
+        return;
+      }
+
+      // Standalone mode (directly at localhost:3011/?edit=1 without the dashboard)
       setActiveField({
         collection,
         key,
@@ -103,7 +124,6 @@ export function EditableOverlay() {
         linkUrl,
       });
 
-      const rect = target.getBoundingClientRect();
       setPanelPos({
         x: Math.min(rect.left, window.innerWidth - 380),
         y: rect.bottom + 12,
