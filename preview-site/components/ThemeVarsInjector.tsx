@@ -9,6 +9,12 @@ import { fetchActiveThemeVars } from "@/lib/theme-vars";
  * globals.css. No Content Studio -> silently keeps the defaults (matches
  * production with no theme applied). This is "refresh to see the latest
  * saved theme", not keystroke-level live preview -- see repo README.
+ *
+ * Dispatches a `rootlink:theme-vars-updated` window event afterwards, so
+ * anything that reads these colors outside of CSS/Tailwind (currently just
+ * HeroParticleCanvas, which draws to a <canvas> and can't use CSS at all)
+ * knows to re-read them -- this component's fetch is async, so those
+ * consumers' own initial mount usually runs before these values are ready.
  */
 export function ThemeVarsInjector() {
   useEffect(() => {
@@ -19,6 +25,7 @@ export function ThemeVarsInjector() {
       for (const [key, value] of Object.entries(vars)) {
         root.style.setProperty(key, value);
       }
+      window.dispatchEvent(new Event("rootlink:theme-vars-updated"));
     });
     return () => {
       cancelled = true;

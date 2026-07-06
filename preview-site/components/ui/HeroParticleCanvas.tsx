@@ -2,29 +2,70 @@
 
 import { useEffect, useRef, useCallback } from "react";
 
-/* ─── colour tokens (RGBA) ──────────────────────────────────────── */
+/*
+ * Colour tokens (RGBA) -- read live from the same --rl-* CSS custom
+ * properties the rest of the site's colors come from (see globals.css),
+ * instead of frozen hex values. This is a <canvas>, so it can't just use
+ * Tailwind classes like everything else; it has to read the computed CSS
+ * variable values itself. Alpha values (0.10, 0.06, etc.) and which shade
+ * each layer uses are fixed design choices, not themeable -- only the
+ * underlying color is. Dark mode's background/particle color stay fixed
+ * neutrals (stone-950/stone-300), matching the rest of the site: neutrals
+ * aren't themeable yet, only the primary/earth/rust brand palette is (see
+ * repo README).
+ */
 
-const LIGHT = {
-  bg: [248, 246, 242] as const,           // cream
-  blobs: [
-    [173, 154, 122, 0.10],                // primary-300
-    [187, 160, 128, 0.09],                // earth-300
-    [207, 155, 122, 0.08],                // rust-300
-    [145, 122, 86, 0.07],                 // primary-400
-  ] as readonly (readonly number[])[],
-  particles: [122, 96, 64, 0.12] as const, // primary-500 light dots
+function hexToRgbArray(hex: string): readonly [number, number, number] {
+  const clean = hex.trim().replace('#', '');
+  const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
+  const num = parseInt(full || '000000', 16);
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+}
+
+function readCssColor(varName: string, fallbackHex: string): readonly [number, number, number] {
+  if (typeof window === 'undefined') return hexToRgbArray(fallbackHex);
+  const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  return hexToRgbArray(value || fallbackHex);
+}
+
+type Palette = {
+  bg: readonly [number, number, number];
+  blobs: readonly (readonly [number, number, number, number])[];
+  particles: readonly [number, number, number, number];
 };
 
-const DARK = {
-  bg: [12, 10, 9] as const,               // stone-950
-  blobs: [
-    [173, 154, 122, 0.06],                // primary-300 (dimmer)
-    [187, 160, 128, 0.05],                // earth-300
-    [207, 155, 122, 0.05],                // rust-300
-    [105, 90, 60, 0.04],                  // earth-600
-  ] as readonly (readonly number[])[],
-  particles: [202, 189, 170, 0.18] as const, // stone-300 light dots
-};
+function getLivePalette(dark: boolean): Palette {
+  const primary300 = readCssColor('--rl-primary-300', '#ad9a7a');
+  const primary400 = readCssColor('--rl-primary-400', '#917a56');
+  const primary500 = readCssColor('--rl-primary-500', '#7a6040');
+  const earth300 = readCssColor('--rl-earth-300', '#bba080');
+  const earth600 = readCssColor('--rl-earth-600', '#70553a');
+  const rust300 = readCssColor('--rl-rust-300', '#cf9b7a');
+  const cream = readCssColor('--rl-cream', '#f8f6f2');
+
+  if (dark) {
+    return {
+      bg: [12, 10, 9], // stone-950 -- neutral, not themed
+      blobs: [
+        [...primary300, 0.06],
+        [...earth300, 0.05],
+        [...rust300, 0.05],
+        [...earth600, 0.04],
+      ],
+      particles: [202, 189, 170, 0.18], // stone-300 -- neutral, not themed
+    };
+  }
+  return {
+    bg: cream,
+    blobs: [
+      [...primary300, 0.1],
+      [...earth300, 0.09],
+      [...rust300, 0.08],
+      [...primary400, 0.07],
+    ],
+    particles: [...primary500, 0.12],
+  };
+}
 
 /* ─── helpers ────────────────────────────────────────────────────── */
 
@@ -219,7 +260,7 @@ export function HeroParticleCanvas() {
   const visibleRef = useRef(true);
   const sizeRef = useRef({ w: 0, h: 0 });
 
-  const getPalette = useCallback(() => (isDarkRef.current ? DARK : LIGHT), []);
+  const getPalette = useCallback(() => getLivePalette(isDarkRef.current), []);
 
   /* ── init ─────────────────────────────────────────────────────── */
 
@@ -236,14 +277,26 @@ export function HeroParticleCanvas() {
     const onMql = () => (prefersReducedRef.current = mql.matches);
     mql.addEventListener("change", onMql);
 
-    // dark mode observer
-    const onClassChange = () => {
-      isDarkRef.current = document.documentElement.classList.contains("dark");
-      // re-seed particle colours when mode changes
+    // Re-reads current CSS variable values and re-colors everything already
+    // on screen -- used both for dark-mode toggling and for when
+    // ThemeVarsInjector applies a theme fetched from Content Studio (which
+    // happens asynchronously, after this component's own initial paint).
+    const refreshColors = () => {
       const pal = getPalette();
       particlesRef.current.forEach((p) => {
         p.color = pal.particles;
       });
+      blobsRef.current.forEach((b, i) => {
+        const color = pal.blobs[i % pal.blobs.length];
+        b.color = color;
+        b.alpha = color[3];
+      });
+    };
+
+    // dark mode observer
+    const onClassChange = () => {
+      isDarkRef.current = document.documentElement.classList.contains("dark");
+      refreshColors();
     };
     onClassChange(); // initial check
     const observer = new MutationObserver(onClassChange);
@@ -251,6 +304,9 @@ export function HeroParticleCanvas() {
       attributes: true,
       attributeFilter: ["class"],
     });
+
+    // Theme colors arriving from Content Studio (see ThemeVarsInjector)
+    window.addEventListener("rootlink:theme-vars-updated", refreshColors);
 
     // scroll
     const onScroll = () => (scrollRef.current = window.scrollY);
@@ -334,8 +390,9 @@ export function HeroParticleCanvas() {
 
     return () => {
       cancelAnimationFrame(animRef.current);
-      mql.removeEventListener("change", onClassChange);
+      mql.removeEventListener("change", onMql);
       observer.disconnect();
+      window.removeEventListener("rootlink:theme-vars-updated", refreshColors);
       window.removeEventListener("scroll", onScroll);
       resizeObs.disconnect();
       visObs.disconnect();
