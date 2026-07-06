@@ -22,6 +22,13 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        dashboard: {
+          Component: '/views/ContentStudioDashboard#ContentStudioDashboard',
+        },
+      },
+    },
   },
   collections: [Users, Fonts, Media, MarketingCopy, Pages, Themes, Templates],
   editor: lexicalEditor(),
