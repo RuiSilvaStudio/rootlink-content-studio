@@ -43,7 +43,26 @@ npm install
 npm run dev   # http://localhost:3011
 ```
 
-No database, no env vars, no other services required -- it's fully static.
+No database required directly -- it's static content-wise, but it does fetch two
+things from Content Studio at runtime (`http://localhost:3010` by default, override
+via `NEXT_PUBLIC_CONTENT_STUDIO_URL`): marketing copy overrides
+(`lib/locale-context.tsx`) and the active theme's color palette
+(`lib/theme-vars.ts` + `components/ThemeVarsInjector.tsx`). If Content Studio isn't
+running, both fail silently and you just get RootLink's real bundled
+defaults -- this never hard-depends on Content Studio being up.
+
+## Runtime color theming (the actual point of this clone)
+
+`tailwind.config.ts`'s `primary`/`earth`/`rust`/`cream` colors resolve to CSS custom
+properties (`rgb(var(--color-primary-500) / <alpha-value>)`), not fixed hex --
+required for Tailwind v3 (what RootLink's real frontend runs) to support runtime
+color changes while keeping opacity-modifier classes like `bg-primary-100/60`
+working. `globals.css` sets the defaults to RootLink's exact real values; the
+`ThemeVarsInjector` client component overrides them from Content Studio's active
+Theme on page load. Change a color in Payload's Theme editor, refresh this app, and
+every real `primary-*`/`earth-*`/`rust-*` class site-wide actually changes -- no
+rebuild. This is "refresh to see the latest *saved* theme," not keystroke-level live
+preview (that would need a cross-origin postMessage bridge, not built yet).
 
 ## Verified fidelity
 

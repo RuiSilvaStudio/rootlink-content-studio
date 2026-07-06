@@ -1,17 +1,35 @@
 import type { Theme } from '@/payload-types'
 
+import { SHADE_STEPS } from './color-scale'
+
 export type ThemeMode = 'light' | 'dark'
 
-const FALLBACK_COLORS: Theme['colorsLight'] = {
-  bgRoot: '#fafafa',
-  text: '#18181b',
-  surface1: '#f4f4f5',
-  surface2: '#e4e4e7',
-  primary: '#10b981',
-  success: '#10b981',
-  warning: '#f59e0b',
-  error: '#ef4444',
+const FALLBACK_SCALE_HEX: Record<string, string> = {
+  s50: '#f3f0eb',
+  s100: '#e3ddd0',
+  s200: '#cabda6',
+  s300: '#ad9a7a',
+  s400: '#917a56',
+  s500: '#7a6040',
+  s600: '#634d33',
+  s700: '#4f3d2a',
+  s800: '#3d2f21',
+  s900: '#291f16',
 }
+
+const FALLBACK_PALETTE: Theme['palette'] = {
+  primary: { seed: '#7a6040', scale: FALLBACK_SCALE_HEX as never },
+  earth: { seed: '#8c6b48', scale: FALLBACK_SCALE_HEX as never },
+  rust: { seed: '#a8643d', scale: FALLBACK_SCALE_HEX as never },
+  cream: '#f8f6f2',
+}
+
+// Fixed neutrals -- RootLink's real components use Tailwind's stock stone
+// scale for backgrounds/text, not a custom one, so these aren't themeable
+// (yet -- see README "Next up" section for why this was scoped out).
+const NEUTRAL_LIGHT_TEXT = '#292524' // ~stone-800
+const NEUTRAL_DARK_BG = '#0c0a09' // ~stone-950
+const NEUTRAL_DARK_TEXT = '#f5f5f4' // ~stone-100
 
 const TYPE_LEVELS = ['h1', 'h2', 'h3', 'body', 'small', 'mono'] as const
 export type TypeLevel = (typeof TYPE_LEVELS)[number]
@@ -39,22 +57,28 @@ export function lookupSpacing(theme: Theme | null | undefined, token: string): n
   return found?.valuePx ?? FALLBACK_SPACING[token] ?? 16
 }
 
+export function getPalette(theme: Theme | null | undefined) {
+  return theme?.palette ?? FALLBACK_PALETTE
+}
+
 /**
- * Converts a Theme document into a flat map of CSS custom properties for the
- * given mode (light/dark), suitable for spreading onto a React `style` prop.
+ * Converts a Theme document's real palette (primary/earth/rust scales +
+ * cream) into a flat map of CSS custom properties, for Content Studio's own
+ * generic style-guide preview. This is a rough approximation for a
+ * mode toggle, not the real site's actual light/dark implementation --
+ * see preview-site for the real one.
  */
 export function themeCssVars(theme: Theme | null | undefined, mode: ThemeMode): Record<string, string> {
-  const colors = (mode === 'light' ? theme?.colorsLight : theme?.colorsDark) ?? FALLBACK_COLORS
+  const palette = getPalette(theme)
 
   const vars: Record<string, string> = {
-    '--cs-color-bg': colors.bgRoot,
-    '--cs-color-text': colors.text,
-    '--cs-color-surface-1': colors.surface1,
-    '--cs-color-surface-2': colors.surface2,
-    '--cs-color-primary': colors.primary,
-    '--cs-color-success': colors.success,
-    '--cs-color-warning': colors.warning,
-    '--cs-color-error': colors.error,
+    '--cs-color-bg': mode === 'light' ? palette.cream : NEUTRAL_DARK_BG,
+    '--cs-color-text': mode === 'light' ? NEUTRAL_LIGHT_TEXT : NEUTRAL_DARK_TEXT,
+    '--cs-color-surface-1': mode === 'light' ? palette.primary.scale.s50 : palette.primary.scale.s900,
+    '--cs-color-surface-2': mode === 'light' ? palette.primary.scale.s100 : palette.primary.scale.s800,
+    '--cs-color-primary': palette.primary.scale.s600,
+    '--cs-color-earth': palette.earth.scale.s600,
+    '--cs-color-rust': palette.rust.scale.s600,
     '--cs-font-family': theme?.fontFamily || 'Inter',
     '--cs-font-mono': theme?.fontFamilyMono || 'JetBrains Mono',
     '--cs-radius-sm': `${theme?.radii?.sm ?? 4}px`,
@@ -76,3 +100,5 @@ export function themeCssVars(theme: Theme | null | undefined, mode: ThemeMode): 
 
   return vars
 }
+
+export { SHADE_STEPS }

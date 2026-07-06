@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LocaleProvider, useLocale } from "@/lib/locale-context";
 import { NavBar } from "@/components/nav/NavBar";
 import { Footer } from "@/components/Footer";
+import { ThemeVarsInjector } from "@/components/ThemeVarsInjector";
 import { useEffect } from "react";
 import "./globals.css";
 
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen flex flex-col">
         <LocaleProvider>
           <LangUpdater />
+          <ThemeVarsInjector />
           <NavBar />
           <AnimatePresence mode="wait">
             <motion.main

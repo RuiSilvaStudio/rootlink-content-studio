@@ -1,5 +1,36 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Runtime-themeable color pattern for Tailwind v3 (RootLink's real frontend
+ * is on tailwindcss@3.4.x, not v4 -- v4 has this built in natively via
+ * `@theme`, but v3 needs this manual wiring).
+ *
+ * Each shade resolves to a CSS custom property holding space-separated RGB
+ * channels (e.g. `--color-primary-500: 122 96 64;`), wrapped in
+ * `rgb(var(...) / <alpha-value>)`. This is what makes opacity modifiers
+ * (`bg-primary-100/60`, `border-primary-200/40` -- used extensively in the
+ * real RootLink components) keep working: Tailwind substitutes
+ * `<alpha-value>` with the modifier's alpha at build time, same as any
+ * normal color.
+ *
+ * The actual values live in `app/globals.css` `:root` as defaults (matching
+ * RootLink's real hand-tuned palette exactly, so nothing looks different
+ * until Content Studio overrides them), and get overridden at runtime by
+ * injecting new `:root` custom property values -- no rebuild required.
+ */
+function withOpacity(cssVar: string) {
+  return `rgb(var(${cssVar}) / <alpha-value>)`;
+}
+
+const SHADES = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"] as const;
+
+function themeableScale(family: string): Record<(typeof SHADES)[number], string> {
+  return Object.fromEntries(SHADES.map((shade) => [shade, withOpacity(`--color-${family}-${shade}`)])) as Record<
+    (typeof SHADES)[number],
+    string
+  >;
+}
+
 const config: Config = {
   darkMode: "class",
   content: [
@@ -13,43 +44,10 @@ const config: Config = {
         serif: ["Source Serif 4", "Georgia", "serif"],
       },
       colors: {
-        primary: {
-          50: "#f3f0eb",
-          100: "#e3ddd0",
-          200: "#cabda6",
-          300: "#ad9a7a",
-          400: "#917a56",
-          500: "#7a6040",
-          600: "#634d33",
-          700: "#4f3d2a",
-          800: "#3d2f21",
-          900: "#291f16",
-        },
-        earth: {
-          50: "#f5f0ea",
-          100: "#e8ddd0",
-          200: "#d4c0a8",
-          300: "#bba080",
-          400: "#a6845e",
-          500: "#8c6b48",
-          600: "#70553a",
-          700: "#5a432e",
-          800: "#453324",
-          900: "#2e2218",
-        },
-        cream: "#f8f6f2",
-        rust: {
-          50: "#f9f0ec",
-          100: "#f0dcd1",
-          200: "#e0bea8",
-          300: "#cf9b7a",
-          400: "#c07d53",
-          500: "#a8643d",
-          600: "#8b5032",
-          700: "#714029",
-          800: "#5c3422",
-          900: "#4a2a1c",
-        },
+        primary: themeableScale("primary"),
+        earth: themeableScale("earth"),
+        rust: themeableScale("rust"),
+        cream: withOpacity("--color-cream"),
       },
       borderRadius: {
         xl2: "16px",

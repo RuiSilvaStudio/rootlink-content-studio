@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated, ownerOnly, ownerOnlyField } from '../access'
+import { anyone, authenticated, ownerOnly, ownerOnlyField } from '../access'
+import { SHADE_STEPS } from '../lib/color-scale'
 
 const hexColor = {
   type: 'text' as const,
@@ -18,16 +19,41 @@ const hexColor = {
   },
 }
 
-const colorModeFields = [
-  { name: 'bgRoot', label: 'Base background', ...hexColor },
-  { name: 'text', label: 'Body text', ...hexColor },
-  { name: 'surface1', label: 'Surface (level 1)', ...hexColor },
-  { name: 'surface2', label: 'Surface (level 2)', ...hexColor },
-  { name: 'primary', label: 'Primary action', ...hexColor },
-  { name: 'success', label: 'Success', ...hexColor },
-  { name: 'warning', label: 'Warning', ...hexColor },
-  { name: 'error', label: 'Error', ...hexColor },
-]
+/**
+ * One themeable color family (RootLink's real Tailwind config defines
+ * exactly three: primary, earth, rust -- each a full 50-900 scale). "seed"
+ * plus "Generate scale" gives a fast, visual starting point; every one of
+ * the 9 shades is still a normal, independently hand-editable field
+ * afterwards. See src/lib/color-scale.ts and src/fields/GenerateScaleButton.tsx.
+ */
+function paletteFamily(label: string, defaultSeed: string) {
+  return {
+    type: 'group' as const,
+    label,
+    fields: [
+      { name: 'seed', label: `${label} -- seed color`, defaultValue: defaultSeed, ...hexColor },
+      {
+        name: 'generateAction',
+        type: 'ui' as const,
+        admin: {
+          components: {
+            Field: '/fields/GenerateScaleButton#GenerateScaleButton',
+          },
+        },
+      },
+      {
+        name: 'scale',
+        type: 'group' as const,
+        label: 'Shades (50 = lightest, 900 = darkest)',
+        fields: SHADE_STEPS.map((step) => ({
+          name: `s${step}`,
+          label: step,
+          ...hexColor,
+        })),
+      },
+    ],
+  }
+}
 
 export const Themes: CollectionConfig = {
   slug: 'themes',
@@ -39,7 +65,7 @@ export const Themes: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'isActive', 'updatedAt'],
     description:
-      'Design tokens: color, typography, spacing. Multiple themes can exist; mark one active per site.',
+      'Design tokens: color palette, typography, spacing. Multiple themes can exist; mark one active per site.',
     livePreview: {
       url: ({ data }) =>
         data?.id
@@ -53,7 +79,9 @@ export const Themes: CollectionConfig = {
     },
   },
   access: {
-    read: authenticated,
+    // Public read: the live site (and the preview-site clone) fetch the
+    // active theme's palette directly, same reasoning as MarketingCopy.
+    read: anyone,
     create: authenticated,
     update: authenticated,
     delete: ownerOnly,
@@ -84,19 +112,26 @@ export const Themes: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Colors',
+          label: 'Palette',
           fields: [
             {
-              name: 'colorsLight',
-              label: 'Light mode',
-              type: 'group',
-              fields: colorModeFields,
+              name: 'importExport',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '/fields/PaletteImportExport#PaletteImportExport',
+                },
+              },
             },
             {
-              name: 'colorsDark',
-              label: 'Dark mode',
+              name: 'palette',
               type: 'group',
-              fields: colorModeFields,
+              fields: [
+                { name: 'primary', ...paletteFamily('Primary', '#7a6040') },
+                { name: 'earth', ...paletteFamily('Earth', '#8c6b48') },
+                { name: 'rust', ...paletteFamily('Rust', '#a8643d') },
+                { name: 'cream', label: 'Cream (base background)', defaultValue: '#f8f6f2', ...hexColor },
+              ],
             },
           ],
         },

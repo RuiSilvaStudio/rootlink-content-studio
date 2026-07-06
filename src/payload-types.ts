@@ -206,7 +206,7 @@ export interface MarketingCopy {
   createdAt: string;
 }
 /**
- * Design tokens: color, typography, spacing. Multiple themes can exist; mark one active per site.
+ * Design tokens: color palette, typography, spacing. Multiple themes can exist; mark one active per site.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "themes".
@@ -221,25 +221,53 @@ export interface Theme {
    * The active theme is the one currently live on the site.
    */
   isActive?: boolean | null;
-  colorsLight: {
-    bgRoot: string;
-    text: string;
-    surface1: string;
-    surface2: string;
-    primary: string;
-    success: string;
-    warning: string;
-    error: string;
-  };
-  colorsDark: {
-    bgRoot: string;
-    text: string;
-    surface1: string;
-    surface2: string;
-    primary: string;
-    success: string;
-    warning: string;
-    error: string;
+  palette: {
+    primary: {
+      seed: string;
+      scale: {
+        s50: string;
+        s100: string;
+        s200: string;
+        s300: string;
+        s400: string;
+        s500: string;
+        s600: string;
+        s700: string;
+        s800: string;
+        s900: string;
+      };
+    };
+    earth: {
+      seed: string;
+      scale: {
+        s50: string;
+        s100: string;
+        s200: string;
+        s300: string;
+        s400: string;
+        s500: string;
+        s600: string;
+        s700: string;
+        s800: string;
+        s900: string;
+      };
+    };
+    rust: {
+      seed: string;
+      scale: {
+        s50: string;
+        s100: string;
+        s200: string;
+        s300: string;
+        s400: string;
+        s500: string;
+        s600: string;
+        s700: string;
+        s800: string;
+        s900: string;
+      };
+    };
+    cream: string;
   };
   /**
    * Body/display font, e.g. "Inter" or "Geist".
@@ -499,29 +527,67 @@ export interface MarketingCopySelect<T extends boolean = true> {
 export interface ThemesSelect<T extends boolean = true> {
   name?: T;
   isActive?: T;
-  colorsLight?:
+  palette?:
     | T
     | {
-        bgRoot?: T;
-        text?: T;
-        surface1?: T;
-        surface2?: T;
-        primary?: T;
-        success?: T;
-        warning?: T;
-        error?: T;
-      };
-  colorsDark?:
-    | T
-    | {
-        bgRoot?: T;
-        text?: T;
-        surface1?: T;
-        surface2?: T;
-        primary?: T;
-        success?: T;
-        warning?: T;
-        error?: T;
+        primary?:
+          | T
+          | {
+              seed?: T;
+              scale?:
+                | T
+                | {
+                    s50?: T;
+                    s100?: T;
+                    s200?: T;
+                    s300?: T;
+                    s400?: T;
+                    s500?: T;
+                    s600?: T;
+                    s700?: T;
+                    s800?: T;
+                    s900?: T;
+                  };
+            };
+        earth?:
+          | T
+          | {
+              seed?: T;
+              scale?:
+                | T
+                | {
+                    s50?: T;
+                    s100?: T;
+                    s200?: T;
+                    s300?: T;
+                    s400?: T;
+                    s500?: T;
+                    s600?: T;
+                    s700?: T;
+                    s800?: T;
+                    s900?: T;
+                  };
+            };
+        rust?:
+          | T
+          | {
+              seed?: T;
+              scale?:
+                | T
+                | {
+                    s50?: T;
+                    s100?: T;
+                    s200?: T;
+                    s300?: T;
+                    s400?: T;
+                    s500?: T;
+                    s600?: T;
+                    s700?: T;
+                    s800?: T;
+                    s900?: T;
+                  };
+            };
+        cream?: T;
       };
   fontFamily?: T;
   fontFamilyMono?: T;

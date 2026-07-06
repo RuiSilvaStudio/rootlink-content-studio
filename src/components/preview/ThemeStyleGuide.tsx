@@ -1,17 +1,8 @@
 import type { Theme } from '@/payload-types'
 
-import { lookupScale, type TypeLevel } from '@/lib/theme-tokens'
+import { SHADE_STEPS, lookupScale, type TypeLevel } from '@/lib/theme-tokens'
 
-const SWATCHES: { key: keyof Theme['colorsLight']; label: string }[] = [
-  { key: 'bgRoot', label: 'Base background' },
-  { key: 'text', label: 'Body text' },
-  { key: 'surface1', label: 'Surface 1' },
-  { key: 'surface2', label: 'Surface 2' },
-  { key: 'primary', label: 'Primary' },
-  { key: 'success', label: 'Success' },
-  { key: 'warning', label: 'Warning' },
-  { key: 'error', label: 'Error' },
-]
+const FAMILIES = ['primary', 'earth', 'rust'] as const
 
 const TYPE_LEVELS: { level: TypeLevel; sample: string }[] = [
   { level: 'h1', sample: 'Grow resilience, together.' },
@@ -23,7 +14,7 @@ const TYPE_LEVELS: { level: TypeLevel; sample: string }[] = [
 ]
 
 export function ThemeStyleGuide({ theme, mode }: { theme: Theme; mode: 'light' | 'dark' }) {
-  const colors = mode === 'light' ? theme.colorsLight : theme.colorsDark
+  const palette = theme.palette
 
   return (
     <div className="cs-root">
@@ -32,16 +23,35 @@ export function ThemeStyleGuide({ theme, mode }: { theme: Theme; mode: 'light' |
           {theme.name} &middot; {mode} mode
         </p>
         <h1 className="cs-h1" style={{ marginTop: 8 }}>
-          Colors
+          Palette
         </h1>
-        <div className="cs-grid" style={{ marginTop: 24 }}>
-          {SWATCHES.map((s) => (
-            <div className="cs-swatch" key={s.key}>
-              <div className="cs-swatch__chip" style={{ background: colors[s.key] }} />
-              <p className="cs-small">{s.label}</p>
-              <p className="cs-mono cs-small">{colors[s.key]}</p>
+        {FAMILIES.map((family) => (
+          <div key={family} style={{ marginTop: 24 }}>
+            <p className="cs-small" style={{ opacity: 0.65, marginBottom: 8, textTransform: 'capitalize' }}>
+              {family}
+            </p>
+            <div className="cs-grid">
+              {SHADE_STEPS.map((step) => {
+                const hex = palette[family].scale[`s${step}` as keyof (typeof palette)[typeof family]['scale']]
+                return (
+                  <div className="cs-swatch" key={step}>
+                    <div className="cs-swatch__chip" style={{ background: hex }} />
+                    <p className="cs-small">{step}</p>
+                    <p className="cs-mono cs-small">{hex}</p>
+                  </div>
+                )
+              })}
             </div>
-          ))}
+          </div>
+        ))}
+        <div style={{ marginTop: 24 }}>
+          <p className="cs-small" style={{ opacity: 0.65, marginBottom: 8 }}>
+            Cream (base background)
+          </p>
+          <div className="cs-swatch" style={{ maxWidth: 140 }}>
+            <div className="cs-swatch__chip" style={{ background: palette.cream }} />
+            <p className="cs-mono cs-small">{palette.cream}</p>
+          </div>
         </div>
       </section>
 

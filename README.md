@@ -57,8 +57,12 @@ exists) and safe to delete afterwards.
   `homepage.hero.title`), with a `page` and free-text `notes` field for context.
 - **Media** (`media`) — image uploads with alt text (required), a usage tag
   (hero/icon/background/etc.), and optional usage notes.
-- **Themes** (`themes`) — design tokens: colors (light + dark), typography scale,
-  spacing scale, corner radii. Multiple themes can exist; one is marked `isActive`
+- **Themes** (`themes`) — design tokens. The **Palette** tab controls RootLink's real
+  Tailwind color families (`primary`/`earth`/`rust`, each a full 50-900 scale, plus
+  `cream`) -- pick a seed color and generate a scale, hand-edit any shade afterwards,
+  or import/export a palette as JSON. Typography scale, spacing scale, and corner
+  radii are also here (still a generic model, not yet reconciled with RootLink's real
+  fonts -- see "Next up"). Multiple themes can exist; one is marked `isActive`
   (owner-only to change — it's the "what's actually live" switch).
 - **Templates** (`templates`) — reusable page layouts built from an ordered list of
   blocks (Hero, Text Section, Image with Text, Call to Action — see `src/blocks/`).
@@ -121,22 +125,39 @@ fully separate compose stack/network/volumes from `rootlink/docker-compose.prod.
 This will be documented here once set up (see `rootlink/DEPLOY.md` for the pattern
 used on the platform side).
 
+## Theme colors <-> real Tailwind palette (resolved)
+
+RootLink's real frontend is on **Tailwind v3.4.x** (not v4, which has CSS-variable
+theming built in natively -- v3 needs manual wiring). The fix, applied in
+`preview-site` only so far:
+
+- `preview-site/tailwind.config.ts` now defines `primary`/`earth`/`rust`/`cream` as
+  `rgb(var(--color-*) / <alpha-value>)` instead of fixed hex -- this specific pattern
+  is what keeps opacity modifiers (`bg-primary-100/60`, used constantly in the real
+  components) working correctly.
+- `preview-site/app/globals.css` sets the default `:root` values to RootLink's exact
+  real hex colors (as "r g b" triplets), so nothing looks different with no theme
+  applied.
+- `ThemeVarsInjector` fetches the active Theme's palette from Content Studio on load
+  and overrides those CSS variables at runtime -- **no rebuild**. Verified end to end:
+  changing the primary color in Payload and refreshing actually re-colors every real
+  `primary-*` class site-wide (buttons, wordmark, icons, footer -- everything).
+- Themes' color model was rebuilt to match: a **Palette** tab with real 50-900 scales
+  per family, a seed-color + "generate scale" button (`src/lib/color-scale.ts`,
+  reverse-engineered from RootLink's actual lightness curve), every shade still
+  hand-editable after generating, plus import/export as JSON.
+
+Not done yet: this same CSS-variable pattern hasn't been applied to the real
+`rootlink/frontend` (deliberately -- see "Integration" below), and Typography/Spacing
+tabs are still a generic model, not reconciled with RootLink's real fonts (Fraunces /
+Source Serif 4, loaded via a fixed Google Fonts `@import`, not swappable yet).
+
 ## Next up (pick up here)
 
-**Priority 1, before anything else:** reconcile Content Studio's generic `Themes`
-color model with RootLink's real, fixed Tailwind palette (`primary-50..900`, `earth`,
-`rust`, exact hex values baked into `preview-site/tailwind.config.ts`). Right now
-editing a Theme in Payload does nothing to the clone's actual colors -- there's no
-bridge between "generic CSS-variable tokens" and "RootLink's real Tailwind config."
-This needs a real design decision (e.g.: do Themes' fields get reshaped to mirror
-RootLink's actual color scale structure instead of being site-agnostic? Does the
-clone move to CSS-variable-driven Tailwind colors instead of fixed hex? Something
-else?) before building further -- not just more plumbing. Explicitly sequenced
-before Pages/sitemap-tree and click-to-select-in-preview, since those would need
-rework if the theming model changes underneath them.
-
-After that: real Pages collection + sitemap-tree sidebar, then click-to-select
-directly in the live preview (see chat history for the full "Piece 1" framing).
+Real Pages collection + sitemap-tree sidebar, then click-to-select directly in the
+live preview (see chat history for the full "Piece 1" framing). Typography/font
+theming reconciliation (similar shape of problem to the color one above, smaller)
+is a reasonable candidate to fold in alongside Pages, but hasn't been scoped yet.
 
 ## Integration with RootLink (future, not started)
 
