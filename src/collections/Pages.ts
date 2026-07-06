@@ -22,10 +22,12 @@ export const Pages: CollectionConfig = {
       },
     },
     livePreview: {
-      url: ({ data }) =>
-        data?.id && data?.slug
-          ? `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3010'}/preview/templates/${data.id}`
-          : null,
+      url: ({ data }) => {
+        if (!data?.slug) return null;
+        // Point to the preview-site clone — the real RootLink replica
+        const base = process.env.PREVIEW_SITE_URL || 'http://localhost:3011';
+        return `${base}${data.slug}`;
+      },
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
         { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },

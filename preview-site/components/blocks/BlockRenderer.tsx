@@ -25,7 +25,7 @@ export type Block = {
   buttonHref?: string;
 };
 
-function HeroBlock({ block }: { block: Block }) {
+function HeroBlock({ block, index }: { block: Block; index: number }) {
   return (
     <section className="relative hero-grad min-h-[90vh] flex items-center px-4 sm:px-8 pt-16 overflow-hidden">
       <HeroParticleCanvas />
@@ -34,15 +34,15 @@ function HeroBlock({ block }: { block: Block }) {
         <div className="grid lg:grid-cols-5 gap-12 items-center">
           <div className="lg:col-span-3 animate-fade-in">
             {block.eyebrow ? (
-              <Badge variant="sage" className="mb-6">{block.eyebrow}</Badge>
+              <Badge variant="sage" className="mb-6"><span data-cs-field={`pages:blocks.${index}.eyebrow`}>{block.eyebrow}</span></Badge>
             ) : null}
             {block.headline ? (
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[0.95] tracking-tight">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[0.95] tracking-tight" data-cs-field={`pages:blocks.${index}.headline`}>
                 {block.headline}
               </h1>
             ) : null}
             {block.subhead ? (
-              <p className="text-lg sm:text-xl text-stone-500 dark:text-stone-300 mt-6 max-w-lg font-serif leading-relaxed">
+              <p className="text-lg sm:text-xl text-stone-500 dark:text-stone-300 mt-6 max-w-lg font-serif leading-relaxed" data-cs-field={`pages:blocks.${index}.subhead`}>
                 {block.subhead}
               </p>
             ) : null}
@@ -81,17 +81,17 @@ function HeroBlock({ block }: { block: Block }) {
   );
 }
 
-function TextSectionBlock({ block }: { block: Block }) {
+function TextSectionBlock({ block, index }: { block: Block; index: number }) {
   return (
     <section className="px-4 sm:px-8 py-24 sm:py-32">
       <div className={`max-w-3xl mx-auto ${block.alignment === "center" ? "text-center" : ""}`}>
         {block.heading ? (
-          <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] mb-6">
+          <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] mb-6" data-cs-field={`pages:blocks.${index}.heading`}>
             {block.heading}
           </h2>
         ) : null}
         {block.body ? (
-          <p className="text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed">
+          <p className="text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed" data-cs-field={`pages:blocks.${index}.body`}>
             {block.body}
           </p>
         ) : null}
@@ -100,7 +100,7 @@ function TextSectionBlock({ block }: { block: Block }) {
   );
 }
 
-function ImageWithTextBlock({ block }: { block: Block }) {
+function ImageWithTextBlock({ block, index }: { block: Block; index: number }) {
   const isReverse = block.imagePosition === "right";
 
   return (
@@ -108,12 +108,12 @@ function ImageWithTextBlock({ block }: { block: Block }) {
       <div className={`max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center ${isReverse ? "" : ""}`}>
         <div className={isReverse ? "order-2" : ""}>
           {block.heading ? (
-            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] mb-6">
+            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] mb-6" data-cs-field={`pages:blocks.${index}.heading`}>
               {block.heading}
             </h2>
           ) : null}
           {block.body ? (
-            <p className="text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed">
+            <p className="text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed" data-cs-field={`pages:blocks.${index}.body`}>
               {block.body}
             </p>
           ) : null}
@@ -139,17 +139,17 @@ function ImageWithTextBlock({ block }: { block: Block }) {
   );
 }
 
-function CallToActionBlock({ block }: { block: Block }) {
+function CallToActionBlock({ block, index }: { block: Block; index: number }) {
   return (
     <section className="px-4 sm:px-8 py-24 sm:py-32 bg-primary-50/40 dark:bg-primary-950/20 noise-bg">
       <div className="max-w-3xl mx-auto text-center">
         {block.heading ? (
-          <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] mb-4">
+          <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] mb-4" data-cs-field={`pages:blocks.${index}.heading`}>
             {block.heading}
           </h2>
         ) : null}
         {block.body ? (
-          <p className="text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed max-w-md mx-auto mb-8">
+          <p className="text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed max-w-md mx-auto mb-8" data-cs-field={`pages:blocks.${index}.body`}>
             {block.body}
           </p>
         ) : null}
@@ -157,7 +157,7 @@ function CallToActionBlock({ block }: { block: Block }) {
           <Button variant="primary" size="lg" onClick={() => {
             if (block.buttonHref) window.location.href = block.buttonHref;
           }}>
-            {block.buttonLabel}
+            <span data-cs-field={`pages:blocks.${index}.buttonLabel`}>{block.buttonLabel}</span>
           </Button>
         ) : null}
       </div>
@@ -165,16 +165,16 @@ function CallToActionBlock({ block }: { block: Block }) {
   );
 }
 
-export function BlockRenderer({ block }: { block: Block }) {
+export function BlockRenderer({ block, index }: { block: Block; index: number }) {
   switch (block.blockType) {
     case "hero":
-      return <HeroBlock block={block} />;
+      return <HeroBlock block={block} index={index} />;
     case "textSection":
-      return <TextSectionBlock block={block} />;
+      return <TextSectionBlock block={block} index={index} />;
     case "imageWithText":
-      return <ImageWithTextBlock block={block} />;
+      return <ImageWithTextBlock block={block} index={index} />;
     case "callToAction":
-      return <CallToActionBlock block={block} />;
+      return <CallToActionBlock block={block} index={index} />;
     default:
       return null;
   }
@@ -185,7 +185,7 @@ export function RenderBlocks({ blocks }: { blocks: Block[] | null | undefined })
   return (
     <>
       {blocks.map((block, i) => (
-        <BlockRenderer key={(block as { id?: string }).id || i} block={block} />
+        <BlockRenderer key={(block as { id?: string }).id || i} block={block} index={i} />
       ))}
     </>
   );

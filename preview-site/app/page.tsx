@@ -85,13 +85,19 @@ export default function Home() {
 
   if (blocksLoading) return null;
 
+  // If Content Studio provides blocks for this page, render them INSTEAD of
+  // the hardcoded hero and CTA sections — but always keep the data-driven
+  // sections (categories, tools, community, recent) since blocks don't
+  // cover those yet. This prevents duplication while keeping the full page.
   const hasBlocks = pageBlocks && pageBlocks.length > 0;
+  const hasBlockType = (type: string) => hasBlocks && pageBlocks!.some((b) => b.blockType === type);
 
   return (
     <div>
       {hasBlocks ? <RenderBlocks blocks={pageBlocks} /> : null}
 
       {/* ========== HERO — editorial split ========== */}
+      {!hasBlockType("hero") && (
       <section className="relative hero-grad min-h-[90vh] flex items-center px-4 sm:px-8 pt-16 overflow-hidden">
         <HeroParticleCanvas />
         <div className="absolute inset-0 z-1 bg-linear-to-b from-cream/70 via-cream/30 to-transparent dark:from-stone-950/80 dark:via-stone-950/40 dark:to-transparent pointer-events-none" />
@@ -137,6 +143,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ========== CATEGORIES ========== */}
       <section className="px-4 sm:px-8 py-24 sm:py-32">
@@ -277,6 +284,7 @@ export default function Home() {
       </section>
 
       {/* ========== CTA ========== */}
+      {!hasBlockType("callToAction") && (
       <section className="px-4 sm:px-8 py-24 sm:py-32">
         <div className="max-w-3xl mx-auto text-center">
           <div className="w-12 h-px bg-primary-300/40 mx-auto mb-8" />
@@ -290,6 +298,7 @@ export default function Home() {
           <div className="mt-10 w-12 h-px bg-primary-300/40 mx-auto" />
         </div>
       </section>
+      )}
     </div>
   );
 }
