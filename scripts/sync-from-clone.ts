@@ -174,10 +174,37 @@ export async function syncFromClone(payload: Awaited<ReturnType<typeof getPayloa
   }
   payload.logger.info('Theme fonts + radii synced')
 
-  // ── Pages from clone routes ─────────────────────────────
+  // ── Pages from RootLink's real sitemap ──────────────────
+  // Matches the actual routes in rootlink/frontend/app/.
+  // Each entry becomes a Page in Content Studio with 0 blocks
+  // (the hardcoded clone is the default until blocks are added).
   const pageRoutes = [
     { title: 'Homepage', slug: '/', order: 0 },
-    // Future: auto-discover from app directory structure
+    // Discover
+    { title: 'Search', slug: '/search', order: 10 },
+    { title: 'Groups', slug: '/groups', order: 11 },
+    { title: 'Events', slug: '/events', order: 12 },
+    { title: 'Network', slug: '/network', order: 13 },
+    { title: 'Entities', slug: '/entities', order: 14 },
+    { title: 'Feed', slug: '/feed', order: 15 },
+    // Grow
+    { title: 'Plants', slug: '/plants', order: 20 },
+    { title: 'Learning', slug: '/learning', order: 21 },
+    { title: 'Tools', slug: '/tools', order: 22 },
+    // Exchange
+    { title: 'Marketplace', slug: '/marketplace', order: 30 },
+    { title: 'Composting', slug: '/composting', order: 31 },
+    { title: 'Upcycling', slug: '/upcycling', order: 32 },
+    // Community
+    { title: 'Submit', slug: '/submit', order: 40 },
+    { title: 'Leaderboard', slug: '/leaderboard', order: 41 },
+    { title: 'Donate', slug: '/donate', order: 42 },
+    // Content
+    { title: 'Articles', slug: '/articles', order: 50 },
+    // Account
+    { title: 'Profile', slug: '/profile', order: 60 },
+    { title: 'Notifications', slug: '/notifications', order: 61 },
+    { title: 'Messages', slug: '/messages', order: 62 },
   ]
   for (const route of pageRoutes) {
     const existing = await payload.find({ collection: 'pages', where: { slug: { equals: route.slug } }, limit: 1 })
