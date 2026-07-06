@@ -216,22 +216,11 @@ async function seed() {
         slug: '/',
         status: 'published',
         order: 0,
-        blocks: [
-          {
-            blockType: 'hero',
-            eyebrow: 'Community-powered',
-            headline: 'Grow resilience, together.',
-            subhead: 'RootLink connects communities with the tools and people to thrive.',
-            primaryCta: { label: 'Get started', href: '/signup' },
-            secondaryCta: { label: 'Learn more', href: '/about' },
-          },
-          {
-            blockType: 'callToAction',
-            heading: 'Ready to join?',
-            buttonLabel: 'Sign up',
-            buttonHref: '/signup',
-          },
-        ],
+        // Start with no blocks — the full hardcoded clone is the default.
+        // Add blocks to progressively customize sections (hero, CTA, etc.).
+        // When a block type exists for a section, its hardcoded equivalent is
+        // automatically suppressed to avoid duplication.
+        blocks: [],
       },
     })
     payload.logger.info('Seeded page: Homepage')
