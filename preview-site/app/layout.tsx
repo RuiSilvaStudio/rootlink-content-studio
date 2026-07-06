@@ -13,6 +13,7 @@ import { LocaleProvider, useLocale } from "@/lib/locale-context";
 import { NavBar } from "@/components/nav/NavBar";
 import { Footer } from "@/components/Footer";
 import { ThemeVarsInjector } from "@/components/ThemeVarsInjector";
+import { EditableOverlay } from "@/components/EditableOverlay";
 import { useEffect } from "react";
 import "./globals.css";
 
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </motion.main>
           </AnimatePresence>
           <Footer />
+          <EditableOverlay />
         </LocaleProvider>
       </body>
     </html>

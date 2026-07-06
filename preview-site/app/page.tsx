@@ -80,13 +80,13 @@ export default function Home() {
           <div className="grid lg:grid-cols-5 gap-12 items-center">
             <div className="lg:col-span-3 animate-fade-in">
               <Badge variant="sage" className="mb-6">
-                <span>{t("home.discover_rootlink")}</span>
+                <span data-cs-field="marketing-copy:home.discover_rootlink">{t("home.discover_rootlink")}</span>
               </Badge>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[0.95] tracking-tight">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[0.95] tracking-tight" data-cs-field="marketing-copy:home.hero_title">
                 {t("home.hero_title")}
               </h1>
               <div className="mt-6 w-20 h-0.5 bg-primary-300/50 rounded-full" />
-              <p className="text-lg sm:text-xl text-stone-500 dark:text-stone-300 mt-6 max-w-lg font-serif leading-relaxed">
+              <p className="text-lg sm:text-xl text-stone-500 dark:text-stone-300 mt-6 max-w-lg font-serif leading-relaxed" data-cs-field="marketing-copy:home.hero_subtitle">
                 {t("home.hero_subtitle")}
               </p>
               <form onSubmit={handleSearch} className="mt-8 flex flex-col sm:flex-row gap-3 max-w-lg">
@@ -100,7 +100,7 @@ export default function Home() {
                     className="w-full pl-11 pr-4 py-3 rounded-xl2 border border-primary-200/60 bg-white/80 backdrop-blur-xs text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-500/15 focus:outline-hidden transition-all font-serif"
                   />
                 </div>
-                <Button type="submit" size="md">{t("home.search")}</Button>
+                <Button type="submit" size="md"><span data-cs-field="marketing-copy:home.search">{t("home.search")}</span></Button>
               </form>
             </div>
 
@@ -123,8 +123,8 @@ export default function Home() {
       <section className="px-4 sm:px-8 py-24 sm:py-32">
         <div className="max-w-6xl mx-auto">
           <div className="mb-16">
-            <Badge variant="earth" className="mb-5">{t("home.browse_category")}</Badge>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] max-w-2xl">
+            <Badge variant="earth" className="mb-5"><span data-cs-field="marketing-copy:home.browse_category">{t("home.browse_category")}</span></Badge>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05] max-w-2xl" data-cs-field="marketing-copy:home.find_your_corner">
               {t("home.find_your_corner")}
             </h2>
             <div className="mt-5 w-16 h-0.5 bg-primary-300/40 rounded-full" />
@@ -163,11 +163,11 @@ export default function Home() {
       <section className="px-4 sm:px-8 py-24 sm:py-32 bg-primary-50/40 dark:bg-primary-950/20 noise-bg">
         <div className="max-w-6xl mx-auto">
           <div className="mb-16 max-w-2xl">
-            <Badge variant="sage" className="mb-5">{t("home.featured_tools")}</Badge>
-            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]">
+            <Badge variant="sage" className="mb-5"><span data-cs-field="marketing-copy:home.featured_tools">{t("home.featured_tools")}</span></Badge>
+            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]" data-cs-field="marketing-copy:home.built_for_seasons">
               {t("home.built_for_seasons")}
             </h2>
-            <p className="mt-5 text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed">{t("home.tools_subtitle")}</p>
+            <p className="mt-5 text-lg text-stone-500 dark:text-stone-300 font-serif leading-relaxed" data-cs-field="marketing-copy:home.tools_subtitle">{t("home.tools_subtitle")}</p>
             <div className="mt-5 w-16 h-0.5 bg-primary-300/40 dark:bg-primary-700/40 rounded-full" />
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
@@ -200,8 +200,8 @@ export default function Home() {
       <section className="px-4 sm:px-8 py-24 sm:py-32">
         <div className="max-w-6xl mx-auto">
           <div className="mb-16">
-            <Badge variant="green" className="mb-5">{t("home.community")}</Badge>
-            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]">{t("home.learning")}</h2>
+            <Badge variant="green" className="mb-5"><span data-cs-field="marketing-copy:home.community">{t("home.community")}</span></Badge>
+            <h2 className="text-4xl sm:text-5xl font-display font-semibold text-stone-800 dark:text-stone-100 leading-[1.05]" data-cs-field="marketing-copy:home.learning">{t("home.learning")}</h2>
             <div className="mt-5 w-16 h-0.5 bg-primary-300/40 dark:bg-primary-700/40 rounded-full" />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
