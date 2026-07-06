@@ -224,7 +224,7 @@ export interface Media {
 export interface MarketingCopy {
   id: number;
   /**
-   * Must match a real RootLink i18n key, e.g. "home.hero_title" -- this is what gets overridden on the live site. Do not change once in use.
+   * Pick an existing RootLink i18n key from the dropdown, or type a new one. Shows the current English text for each key so you know what will be overridden.
    */
   key: string;
   /**

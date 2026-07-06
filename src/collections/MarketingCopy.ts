@@ -29,8 +29,11 @@ export const MarketingCopy: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
+        components: {
+          Field: '/fields/I18nKeyPicker#I18nKeyPicker',
+        },
         description:
-          'Must match a real RootLink i18n key, e.g. "home.hero_title" -- this is what gets overridden on the live site. Do not change once in use.',
+          'Pick an existing RootLink i18n key from the dropdown, or type a new one. Shows the current English text for each key so you know what will be overridden.',
       },
     },
     {
