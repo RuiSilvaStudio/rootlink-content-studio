@@ -13,6 +13,54 @@ import config from '../src/payload.config.js'
 async function seed() {
   const payload = await getPayload({ config })
 
+  // ── Seed fonts ──────────────────────────────────────────
+  const seedFonts = [
+    {
+      family: 'Fraunces',
+      sourceUrl:
+        'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&display=swap',
+      fallback: 'Georgia, serif',
+    },
+    {
+      family: 'Source Serif 4',
+      sourceUrl:
+        'https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300..700&display=swap',
+      fallback: 'Georgia, serif',
+    },
+    {
+      family: 'Inter',
+      sourceUrl:
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+      fallback: 'ui-sans-serif, system-ui, sans-serif',
+    },
+    {
+      family: 'JetBrains Mono',
+      sourceUrl:
+        'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap',
+      fallback: 'ui-monospace, monospace',
+    },
+    {
+      family: 'Georgia',
+      sourceUrl: '',
+      fallback: 'serif',
+    },
+  ]
+
+  const fontIds: Record<string, number> = {}
+  for (const f of seedFonts) {
+    const existing = await payload.find({ collection: 'fonts', where: { family: { equals: f.family } }, limit: 1 })
+    if (existing.docs.length > 0) {
+      fontIds[f.family] = existing.docs[0].id
+      payload.logger.info(`Font "${f.family}" already exists (#${fontIds[f.family]})`)
+    } else {
+      const created = await payload.create({ collection: 'fonts', data: f })
+      fontIds[f.family] = created.id
+      payload.logger.info(`Created font "${f.family}" (#${created.id})`)
+    }
+  }
+
+  // ── Seed theme ──────────────────────────────────────────
+
   const existingTheme = await payload.find({
     collection: 'themes',
     where: { name: { equals: 'RootLink Default' } },
@@ -75,9 +123,9 @@ async function seed() {
           },
           cream: '#f8f6f2',
         },
-        fontFamily: 'Source Serif 4',
-        fontFamilyDisplay: 'Fraunces',
-        fontFamilyMono: 'JetBrains Mono',
+        fontBody: fontIds['Source Serif 4'],
+        fontDisplay: fontIds['Fraunces'],
+        fontMono: fontIds['JetBrains Mono'],
         scale: [
           { level: 'h1', sizePx: 30, weight: '700', lineHeight: 1.2 },
           { level: 'h2', sizePx: 24, weight: '600', lineHeight: 1.3 },
@@ -163,6 +211,44 @@ async function seed() {
     payload.logger.info('Seeded marketing copy: home.hero_title')
   } else {
     payload.logger.info('Marketing copy "home.hero_title" already exists, skipping')
+  }
+
+  // ── Seed pages ──────────────────────────────────────────
+  const existingHome = await payload.find({
+    collection: 'pages',
+    where: { slug: { equals: '/' } },
+    limit: 1,
+  })
+
+  if (existingHome.docs.length === 0) {
+    await payload.create({
+      collection: 'pages',
+      data: {
+        title: 'Homepage',
+        slug: '/',
+        status: 'published',
+        order: 0,
+        blocks: [
+          {
+            blockType: 'hero',
+            eyebrow: 'Community-powered',
+            headline: 'Grow resilience, together.',
+            subhead: 'RootLink connects communities with the tools and people to thrive.',
+            primaryCta: { label: 'Get started', href: '/signup' },
+            secondaryCta: { label: 'Learn more', href: '/about' },
+          },
+          {
+            blockType: 'callToAction',
+            heading: 'Ready to join?',
+            buttonLabel: 'Sign up',
+            buttonHref: '/signup',
+          },
+        ],
+      },
+    })
+    payload.logger.info('Seeded page: Homepage')
+  } else {
+    payload.logger.info('Page "Homepage" already exists, skipping')
   }
 
   payload.logger.info('Seed complete.')

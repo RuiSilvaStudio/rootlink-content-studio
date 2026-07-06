@@ -139,22 +139,34 @@ export const Themes: CollectionConfig = {
           label: 'Typography',
           fields: [
             {
-              name: 'fontFamily',
-              type: 'text',
-              defaultValue: 'Source Serif 4',
-              admin: { description: 'Body/serif font, e.g. "Source Serif 4" or "Lora".' },
+              name: 'fontBody',
+              type: 'relationship',
+              relationTo: 'fonts',
+              hasMany: false,
+              admin: {
+                description: 'Body/serif font. Pick from the Fonts library.',
+                allowCreate: true,
+              },
             },
             {
-              name: 'fontFamilyDisplay',
-              type: 'text',
-              defaultValue: 'Fraunces',
-              admin: { description: 'Display/heading font, e.g. "Fraunces" or "Playfair Display".' },
+              name: 'fontDisplay',
+              type: 'relationship',
+              relationTo: 'fonts',
+              hasMany: false,
+              admin: {
+                description: 'Display/heading font. Pick from the Fonts library.',
+                allowCreate: true,
+              },
             },
             {
-              name: 'fontFamilyMono',
-              type: 'text',
-              defaultValue: 'JetBrains Mono',
-              admin: { description: 'Used for technical data / IDs.' },
+              name: 'fontMono',
+              type: 'relationship',
+              relationTo: 'fonts',
+              hasMany: false,
+              admin: {
+                description: 'Monospace font for technical data / IDs.',
+                allowCreate: true,
+              },
             },
             {
               name: 'scale',

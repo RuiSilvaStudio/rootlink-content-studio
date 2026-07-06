@@ -7,7 +7,9 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Fonts } from './collections/Fonts'
 import { MarketingCopy } from './collections/MarketingCopy'
+import { Pages } from './collections/Pages'
 import { Templates } from './collections/Templates'
 import { Themes } from './collections/Themes'
 
@@ -21,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, MarketingCopy, Themes, Templates],
+  collections: [Users, Fonts, Media, MarketingCopy, Pages, Themes, Templates],
   editor: lexicalEditor(),
   // Allows the preview-site clone (a separate Next.js app/port) to fetch
   // published content (marketing copy, themes) directly from this API.

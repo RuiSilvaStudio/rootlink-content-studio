@@ -6,10 +6,16 @@
  */
 
 type Scale = Record<string, string>
+type FontDoc = {
+  id: number
+  family: string
+  sourceUrl: string
+  fallback: string
+}
 type ThemeDoc = {
   isActive?: boolean
-  fontFamily?: string
-  fontFamilyDisplay?: string
+  fontBody?: FontDoc | number
+  fontDisplay?: FontDoc | number
   palette: {
     primary: { scale: Scale }
     earth: { scale: Scale }
@@ -25,14 +31,20 @@ type ThemeDoc = {
   }
 }
 
+function isFontDoc(v: unknown): v is FontDoc {
+  return typeof v === 'object' && v !== null && 'family' in v && 'sourceUrl' in v && 'fallback' in v
+}
+
 const SHADE_STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900']
 const FAMILIES = ['primary', 'earth', 'rust'] as const
 
-/** Returns a map of CSS custom property name ("--rl-*") -> string value, or null if no active theme / unreachable. */
-export async function fetchActiveThemeVars(): Promise<Record<string, string> | null> {
+export type ThemeFontsResult = { cssVars: Record<string, string>; fontUrls: string[] }
+
+/** Returns CSS custom properties + the list of font stylesheet URLs to inject. */
+export async function fetchActiveThemeVars(): Promise<ThemeFontsResult | null> {
   const base = process.env.NEXT_PUBLIC_CONTENT_STUDIO_URL || 'http://localhost:3010'
   try {
-    const res = await fetch(`${base}/api/themes?where[isActive][equals]=true&limit=1&depth=0`, {
+    const res = await fetch(`${base}/api/themes?where[isActive][equals]=true&limit=1&depth=1`, {
       cache: 'no-store',
     })
     if (!res.ok) return null
@@ -43,6 +55,7 @@ export async function fetchActiveThemeVars(): Promise<Record<string, string> | n
     const vars: Record<string, string> = {
       '--rl-cream': theme.palette.cream,
     }
+    const fontUrls: string[] = []
 
     // Color scales
     for (const family of FAMILIES) {
@@ -53,9 +66,17 @@ export async function fetchActiveThemeVars(): Promise<Record<string, string> | n
       }
     }
 
-    // Font families
-    if (theme.fontFamilyDisplay) vars['--rl-font-display'] = theme.fontFamilyDisplay
-    if (theme.fontFamily) vars['--rl-font-serif'] = theme.fontFamily
+    // Font families (relationship fields — with depth=1 they're populated as full Font objects)
+    const displayFont = theme.fontDisplay
+    if (isFontDoc(displayFont)) {
+      vars['--rl-font-display'] = `${displayFont.family}, ${displayFont.fallback}`
+      if (displayFont.sourceUrl) fontUrls.push(displayFont.sourceUrl)
+    }
+    const bodyFont = theme.fontBody
+    if (isFontDoc(bodyFont)) {
+      vars['--rl-font-serif'] = `${bodyFont.family}, ${bodyFont.fallback}`
+      if (bodyFont.sourceUrl && bodyFont.sourceUrl !== (isFontDoc(theme.fontDisplay) ? theme.fontDisplay.sourceUrl : '')) fontUrls.push(bodyFont.sourceUrl)
+    }
 
     // Radii
     const r = theme.radii
@@ -67,7 +88,7 @@ export async function fetchActiveThemeVars(): Promise<Record<string, string> | n
       if (r.full != null) vars['--rl-radius-full'] = `${r.full}px`
     }
 
-    return vars
+    return { cssVars: vars, fontUrls }
   } catch {
     return null
   }

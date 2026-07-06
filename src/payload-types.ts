@@ -68,8 +68,10 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    fonts: Font;
     media: Media;
     'marketing-copy': MarketingCopy;
+    pages: Page;
     themes: Theme;
     templates: Template;
     'payload-kv': PayloadKv;
@@ -80,8 +82,10 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    fonts: FontsSelect<false> | FontsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'marketing-copy': MarketingCopySelect<false> | MarketingCopySelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     themes: ThemesSelect<false> | ThemesSelect<true>;
     templates: TemplatesSelect<false> | TemplatesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -151,6 +155,29 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Font library. Add a font here, then select it from the dropdown in Themes > Typography. Preview-site injects the stylesheet automatically at runtime.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts".
+ */
+export interface Font {
+  id: number;
+  /**
+   * CSS font-family name. Must match exactly what the stylesheet declares, e.g. "Fraunces".
+   */
+  family: string;
+  /**
+   * Stylesheet URL (Google Fonts etc.). Leave empty for system fonts like Georgia or Arial — they're already installed on every device.
+   */
+  sourceUrl?: string | null;
+  /**
+   * Fallback stack, e.g. "Georgia, serif". Both family and fallback are joined into the CSS font-family value.
+   */
+  fallback: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -202,6 +229,87 @@ export interface MarketingCopy {
    * Optional context for other editors, e.g. "Shown only to logged-out visitors".
    */
   notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Site pages. Each page has a URL path (slug) and is composed of blocks. Parent pages create the site tree.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  /**
+   * Display name, e.g. "Homepage" or "About Us".
+   */
+  title: string;
+  /**
+   * URL path, e.g. "/" for homepage, "/about" for About page. Must start with /.
+   */
+  slug: string;
+  /**
+   * Parent page — leave empty for top-level pages. Creates the site tree.
+   */
+  parent?: (number | null) | Page;
+  status: 'draft' | 'published';
+  /**
+   * Sort order within the same level of the tree. Lower = first.
+   */
+  order?: number | null;
+  /**
+   * Drag to reorder. The structure of this page, top to bottom.
+   */
+  blocks?:
+    | (
+        | {
+            /**
+             * Small label above the headline, e.g. "New" or a section name. Optional.
+             */
+            eyebrow?: string | null;
+            headline: string;
+            subhead?: string | null;
+            image?: (number | null) | Media;
+            primaryCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            secondaryCta?: {
+              label?: string | null;
+              href?: string | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            heading?: string | null;
+            body: string;
+            alignment?: ('left' | 'center') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textSection';
+          }
+        | {
+            image: number | Media;
+            imagePosition?: ('left' | 'right') | null;
+            heading?: string | null;
+            body: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageWithText';
+          }
+        | {
+            heading: string;
+            body?: string | null;
+            buttonLabel: string;
+            buttonHref: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callToAction';
+          }
+      )[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -270,17 +378,17 @@ export interface Theme {
     cream: string;
   };
   /**
-   * Body/serif font, e.g. "Source Serif 4" or "Lora".
+   * Body/serif font. Pick from the Fonts library.
    */
-  fontFamily?: string | null;
+  fontBody?: (number | null) | Font;
   /**
-   * Display/heading font, e.g. "Fraunces" or "Playfair Display".
+   * Display/heading font. Pick from the Fonts library.
    */
-  fontFamilyDisplay?: string | null;
+  fontDisplay?: (number | null) | Font;
   /**
-   * Used for technical data / IDs.
+   * Monospace font for technical data / IDs.
    */
-  fontFamilyMono?: string | null;
+  fontMono?: (number | null) | Font;
   scale?:
     | {
         level: 'h1' | 'h2' | 'h3' | 'body' | 'small' | 'mono';
@@ -411,12 +519,20 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'fonts';
+        value: number | Font;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
         relationTo: 'marketing-copy';
         value: number | MarketingCopy;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'themes';
@@ -494,6 +610,17 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fonts_select".
+ */
+export interface FontsSelect<T extends boolean = true> {
+  family?: T;
+  sourceUrl?: T;
+  fallback?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -522,6 +649,74 @@ export interface MarketingCopySelect<T extends boolean = true> {
   value?: T;
   locale?: T;
   notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  parent?: T;
+  status?: T;
+  order?: T;
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              subhead?: T;
+              image?: T;
+              primaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCta?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        textSection?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              alignment?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageWithText?:
+          | T
+          | {
+              image?: T;
+              imagePosition?: T;
+              heading?: T;
+              body?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callToAction?:
+          | T
+          | {
+              heading?: T;
+              body?: T;
+              buttonLabel?: T;
+              buttonHref?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -594,9 +789,9 @@ export interface ThemesSelect<T extends boolean = true> {
             };
         cream?: T;
       };
-  fontFamily?: T;
-  fontFamilyDisplay?: T;
-  fontFamilyMono?: T;
+  fontBody?: T;
+  fontDisplay?: T;
+  fontMono?: T;
   scale?:
     | T
     | {

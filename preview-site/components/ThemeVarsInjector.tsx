@@ -4,33 +4,47 @@ import { useEffect } from "react";
 import { fetchActiveThemeVars } from "@/lib/theme-vars";
 
 /**
- * Fetches Content Studio's active Theme palette once on load and applies it
- * as CSS custom properties on <html>, overriding the defaults in
- * globals.css. No Content Studio -> silently keeps the defaults (matches
- * production with no theme applied). This is "refresh to see the latest
- * saved theme", not keystroke-level live preview -- see repo README.
+ * Fetches Content Studio's active Theme palette and font library once on
+ * load, applies CSS custom properties on <html>, and injects
+ * <link rel="stylesheet"> tags for any fonts the theme references that
+ * aren't already loaded from the static @import in globals.css.
+ *
+ * No Content Studio -> silently keeps the defaults (matches production
+ * with no theme applied).
  *
  * Dispatches a `rootlink:theme-vars-updated` window event afterwards, so
  * anything that reads these colors outside of CSS/Tailwind (currently just
  * HeroParticleCanvas, which draws to a <canvas> and can't use CSS at all)
- * knows to re-read them -- this component's fetch is async, so those
- * consumers' own initial mount usually runs before these values are ready.
+ * knows to re-read them.
  */
 export function ThemeVarsInjector() {
   useEffect(() => {
-    let cancelled = false;
-    fetchActiveThemeVars().then((vars) => {
-      if (cancelled || !vars) return;
-      const root = document.documentElement;
-      for (const [key, value] of Object.entries(vars)) {
-        root.style.setProperty(key, value);
+    let cancelled = false
+    fetchActiveThemeVars().then((result) => {
+      if (cancelled || !result) return
+      const { cssVars, fontUrls } = result
+      const root = document.documentElement
+      for (const [key, value] of Object.entries(cssVars)) {
+        root.style.setProperty(key, value)
       }
-      window.dispatchEvent(new Event("rootlink:theme-vars-updated"));
-    });
+      // Inject font stylesheet <link> elements for fonts not already loaded
+      const existingLinks = new Set(
+        Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).map((l) => l.href),
+      )
+      for (const url of fontUrls) {
+        if (!url || existingLinks.has(url)) continue
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        document.head.appendChild(link)
+        existingLinks.add(url)
+      }
+      window.dispatchEvent(new Event('rootlink:theme-vars-updated'))
+    })
     return () => {
-      cancelled = true;
-    };
-  }, []);
+      cancelled = true
+    }
+  }, [])
 
-  return null;
+  return null
 }
