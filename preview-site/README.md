@@ -7,12 +7,33 @@ This is explicitly prototype/throwaway scaffolding (see the repo root README's
 preview against something that actually looks like the real site, instead of a
 hand-built approximation.
 
+## Tailwind version: v4, intentionally different from the real site
+
+RootLink's real frontend (`rootlink/frontend`) runs **Tailwind v3.4.19**. This clone
+was upgraded to **v4** on purpose (`npx @tailwindcss/upgrade`, then hand-fixed --
+see the big comment on `@theme` in `globals.css`) because v4's native CSS-variable
+theming is a meaningfully better fit for Content Studio's runtime color overrides
+than v3's manual pattern, and this clone is low-risk/disposable enough to not need
+to match the real site's *build system*, only its *visual output*. Verified via
+Playwright screenshots (light, dark, mobile) that the output is still pixel-faithful
+after the upgrade, and confirmed the Payload -> live color override loop still
+works end to end. The real `rootlink/frontend`'s own v3->v4 upgrade is a separate,
+bigger, not-yet-made decision (like Next 14->15 in that repo's own TECH_DEBT.md).
+
+If you touch `globals.css`'s color setup, read the comment on `@theme` first --
+there's a specific reason the runtime-overridable source variables are named
+`--rl-*` and not `--color-*` (naming them the same causes a silent self-reference
+that breaks every color on the page; this bit us once already, from the
+auto-migration tool's naive handling of the v3 setup it replaced).
+
 ## What's here vs. what's real
 
 - **Copied close to verbatim** from `rootlink/frontend` (the real platform repo):
-  `tailwind.config.ts`, `app/globals.css`, `messages/{en,pt}.json`,
+  `app/globals.css` (fonts, non-color utility classes, keyframes -- colors were
+  reworked for v4, see above), `messages/{en,pt}.json`,
   `components/ui/{Button,Badge,Card,StatCounter,HeroParticleCanvas,LoadingSkeleton}.tsx`,
-  `components/nav/{NavConfig,DesktopDropdown}.tsx`.
+  `components/nav/{NavConfig,DesktopDropdown}.tsx`. (There's no `tailwind.config.ts`
+  anymore -- v4 configures via CSS, not a JS file.)
 - **Simplified clones** (same visual output for a logged-out visitor, real
   backend/auth machinery removed): `app/layout.tsx`, `app/page.tsx` (homepage),
   `components/nav/{NavBar,MobileNav,MobileBottomBar}.tsx`, `components/Footer.tsx`,
@@ -53,16 +74,17 @@ defaults -- this never hard-depends on Content Studio being up.
 
 ## Runtime color theming (the actual point of this clone)
 
-`tailwind.config.ts`'s `primary`/`earth`/`rust`/`cream` colors resolve to CSS custom
-properties (`rgb(var(--color-primary-500) / <alpha-value>)`), not fixed hex --
-required for Tailwind v3 (what RootLink's real frontend runs) to support runtime
-color changes while keeping opacity-modifier classes like `bg-primary-100/60`
-working. `globals.css` sets the defaults to RootLink's exact real values; the
-`ThemeVarsInjector` client component overrides them from Content Studio's active
-Theme on page load. Change a color in Payload's Theme editor, refresh this app, and
-every real `primary-*`/`earth-*`/`rust-*` class site-wide actually changes -- no
-rebuild. This is "refresh to see the latest *saved* theme," not keystroke-level live
-preview (that would need a cross-origin postMessage bridge, not built yet).
+`globals.css`'s `@theme` block maps `primary`/`earth`/`rust`/`cream` to `--rl-*`
+source variables (also defined in `globals.css`, defaulted to RootLink's exact real
+hex values). Tailwind v4 exposes every `@theme` color as a real native CSS variable
+and natively supports opacity-modifier classes (`bg-primary-100/60`) on any color
+format via `color-mix()`, so there's no manual RGB-triplet/`<alpha-value>` wrapper
+needed anymore (that was a v3-only requirement). `ThemeVarsInjector` fetches the
+active Theme from Content Studio on page load and overrides the `--rl-*` variables
+directly. Change a color in Payload's Theme editor, refresh this app, and every real
+`primary-*`/`earth-*`/`rust-*` class site-wide actually changes -- no rebuild. This
+is "refresh to see the latest *saved* theme," not keystroke-level live preview (that
+would need a cross-origin postMessage bridge, not built yet).
 
 ## Verified fidelity
 

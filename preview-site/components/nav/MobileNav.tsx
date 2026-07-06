@@ -18,12 +18,12 @@ export function MobileNav({ drawerOpen, onCloseDrawer }: { drawerOpen: boolean; 
   return (
     <>
       {drawerOpen && (
-        <div className="fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm lg:hidden" onClick={onCloseDrawer} />
+        <div className="fixed inset-0 z-60 bg-stone-950/60 backdrop-blur-xs lg:hidden" onClick={onCloseDrawer} />
       )}
 
       {drawerOpen && (
-        <div className="fixed inset-y-0 left-0 z-[70] w-[min(85vw,320px)] bg-white dark:bg-stone-900 flex flex-col overflow-hidden lg:hidden animate-drawer-in border-r border-stone-200 dark:border-stone-800">
-          <div className="flex items-center justify-between px-4 h-14 border-b border-stone-200 dark:border-stone-800 flex-shrink-0">
+        <div className="fixed inset-y-0 left-0 z-70 w-[min(85vw,320px)] bg-white dark:bg-stone-900 flex flex-col overflow-hidden lg:hidden animate-drawer-in border-r border-stone-200 dark:border-stone-800">
+          <div className="flex items-center justify-between px-4 h-14 border-b border-stone-200 dark:border-stone-800 shrink-0">
             <span className="font-display text-xl font-semibold tracking-tight leading-none">
               <span className="text-stone-900 dark:text-stone-50">Root</span>
               <em className="text-primary-500 not-italic">Link</em>
@@ -86,7 +86,7 @@ export function MobileNav({ drawerOpen, onCloseDrawer }: { drawerOpen: boolean; 
               </div>
             ))}
           </div>
-          <div className="border-t border-stone-200 dark:border-stone-800 p-3 flex-shrink-0 pb-safe">
+          <div className="border-t border-stone-200 dark:border-stone-800 p-3 shrink-0 pb-safe">
             <Link
               href="/auth/login"
               onClick={onCloseDrawer}

@@ -127,21 +127,26 @@ used on the platform side).
 
 ## Theme colors <-> real Tailwind palette (resolved)
 
-RootLink's real frontend is on **Tailwind v3.4.x** (not v4, which has CSS-variable
-theming built in natively -- v3 needs manual wiring). The fix, applied in
-`preview-site` only so far:
+RootLink's real frontend is on **Tailwind v3.4.x**. `preview-site` was upgraded to
+**Tailwind v4** (official `@tailwindcss/upgrade` tool, then hand-fixed -- see
+`preview-site/README.md` and the `@theme` comment in its `globals.css`), because v4
+exposes every design token as a native CSS variable and handles opacity modifiers
+on any color natively, which is a much better fit for runtime theming than v3's
+manual pattern. This is deliberately *not* the same version the real `rootlink/`
+frontend runs (that stays v3 for now -- its own v4 upgrade is a separate, bigger,
+not-yet-made decision), but `preview-site` only needs to match the real site
+*visually*, not match its build system.
 
-- `preview-site/tailwind.config.ts` now defines `primary`/`earth`/`rust`/`cream` as
-  `rgb(var(--color-*) / <alpha-value>)` instead of fixed hex -- this specific pattern
-  is what keeps opacity modifiers (`bg-primary-100/60`, used constantly in the real
-  components) working correctly.
-- `preview-site/app/globals.css` sets the default `:root` values to RootLink's exact
-  real hex colors (as "r g b" triplets), so nothing looks different with no theme
+- `preview-site/app/globals.css`'s `@theme` block maps `primary`/`earth`/`rust`/
+  `cream` to `--rl-*` source variables (also in `globals.css`, defaulted to
+  RootLink's exact real hex values) -- so nothing looks different with no theme
   applied.
 - `ThemeVarsInjector` fetches the active Theme's palette from Content Studio on load
-  and overrides those CSS variables at runtime -- **no rebuild**. Verified end to end:
-  changing the primary color in Payload and refreshing actually re-colors every real
-  `primary-*` class site-wide (buttons, wordmark, icons, footer -- everything).
+  and overrides those `--rl-*` variables at runtime -- **no rebuild**. Verified end
+  to end under both Tailwind v3 (before the upgrade) and v4 (after): changing the
+  primary color in Payload and refreshing actually re-colors every real `primary-*`
+  class site-wide (buttons, wordmark, icons, footer, opacity-modifier backgrounds
+  like `bg-primary-50/40` -- everything), then correctly reverts.
 - Themes' color model was rebuilt to match: a **Palette** tab with real 50-900 scales
   per family, a seed-color + "generate scale" button (`src/lib/color-scale.ts`,
   reverse-engineered from RootLink's actual lightness curve), every shade still

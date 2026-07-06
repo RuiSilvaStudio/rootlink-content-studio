@@ -9,9 +9,9 @@ export function ContentCardSkeleton() {
           <div className="h-4 w-16 skeleton-shimmer rounded-full" />
           <div className="h-4 w-12 skeleton-shimmer rounded-full" />
         </div>
-        <div className="h-5 w-3/4 skeleton-shimmer rounded" />
-        <div className="h-4 w-full skeleton-shimmer rounded" />
-        <div className="h-4 w-2/3 skeleton-shimmer rounded" />
+        <div className="h-5 w-3/4 skeleton-shimmer rounded-sm" />
+        <div className="h-4 w-full skeleton-shimmer rounded-sm" />
+        <div className="h-4 w-2/3 skeleton-shimmer rounded-sm" />
       </div>
     </div>
   );
@@ -25,9 +25,9 @@ export function CardSkeleton() {
           <div className="h-4 w-16 skeleton-shimmer rounded-full" />
           <div className="h-4 w-12 skeleton-shimmer rounded-full" />
         </div>
-        <div className="h-5 w-3/4 skeleton-shimmer rounded" />
-        <div className="h-4 w-full skeleton-shimmer rounded" />
-        <div className="h-4 w-2/3 skeleton-shimmer rounded" />
+        <div className="h-5 w-3/4 skeleton-shimmer rounded-sm" />
+        <div className="h-4 w-full skeleton-shimmer rounded-sm" />
+        <div className="h-4 w-2/3 skeleton-shimmer rounded-sm" />
       </div>
     </div>
   );
@@ -46,8 +46,8 @@ export function ListSkeleton({ rows = 4, count }: ListSkeletonProps) {
         <div key={i} className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 border border-primary-200/50 dark:border-stone-700/50 rounded-xl2">
           <div className="w-10 h-10 rounded-full skeleton-shimmer" />
           <div className="flex-1 space-y-2">
-            <div className="h-4 w-3/4 skeleton-shimmer rounded" />
-            <div className="h-3 w-1/2 skeleton-shimmer rounded" />
+            <div className="h-4 w-3/4 skeleton-shimmer rounded-sm" />
+            <div className="h-3 w-1/2 skeleton-shimmer rounded-sm" />
           </div>
         </div>
       ))}
@@ -60,8 +60,8 @@ export function ProfileSkeleton() {
     <div className="flex items-center gap-4">
       <div className="w-12 h-12 skeleton-shimmer rounded-full" />
       <div className="space-y-2">
-        <div className="h-4 w-32 skeleton-shimmer rounded" />
-        <div className="h-3 w-24 skeleton-shimmer rounded" />
+        <div className="h-4 w-32 skeleton-shimmer rounded-sm" />
+        <div className="h-3 w-24 skeleton-shimmer rounded-sm" />
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ export function TextSkeleton({ lines = 3, className = "" }: TextProps) {
   return (
     <div className={`space-y-2 ${className}`}>
       {Array.from({ length: lines }).map((_, i) => (
-        <div key={i} className="h-4 skeleton-shimmer rounded" style={{ width: `${100 - i * 15}%` }} />
+        <div key={i} className="h-4 skeleton-shimmer rounded-sm" style={{ width: `${100 - i * 15}%` }} />
       ))}
     </div>
   );
@@ -88,12 +88,12 @@ export function PageSkeleton({ children }: { children?: ReactNode }) {
       {children || (
         <div className="space-y-6">
           <div className="h-6 w-20 skeleton-shimmer rounded-full" />
-          <div className="h-12 w-3/4 skeleton-shimmer rounded" />
-          <div className="h-4 w-1/2 skeleton-shimmer rounded" />
+          <div className="h-12 w-3/4 skeleton-shimmer rounded-sm" />
+          <div className="h-4 w-1/2 skeleton-shimmer rounded-sm" />
           <div className="space-y-3 pt-8">
-            <div className="h-4 w-full skeleton-shimmer rounded" />
-            <div className="h-4 w-full skeleton-shimmer rounded" />
-            <div className="h-4 w-5/6 skeleton-shimmer rounded" />
+            <div className="h-4 w-full skeleton-shimmer rounded-sm" />
+            <div className="h-4 w-full skeleton-shimmer rounded-sm" />
+            <div className="h-4 w-5/6 skeleton-shimmer rounded-sm" />
           </div>
         </div>
       )}

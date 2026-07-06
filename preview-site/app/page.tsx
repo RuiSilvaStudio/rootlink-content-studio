@@ -75,7 +75,7 @@ export default function Home() {
       {/* ========== HERO — editorial split ========== */}
       <section className="relative hero-grad min-h-[90vh] flex items-center px-4 sm:px-8 pt-16 overflow-hidden">
         <HeroParticleCanvas />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-cream/70 via-cream/30 to-transparent dark:from-stone-950/80 dark:via-stone-950/40 dark:to-transparent pointer-events-none" />
+        <div className="absolute inset-0 z-1 bg-linear-to-b from-cream/70 via-cream/30 to-transparent dark:from-stone-950/80 dark:via-stone-950/40 dark:to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-6xl mx-auto w-full">
           <div className="grid lg:grid-cols-5 gap-12 items-center">
             <div className="lg:col-span-3 animate-fade-in">
@@ -97,7 +97,7 @@ export default function Home() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={t("home.search_placeholder")}
-                    className="w-full pl-11 pr-4 py-3 rounded-xl2 border border-primary-200/60 bg-white/80 backdrop-blur-sm text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-500/15 focus:outline-none transition-all font-serif"
+                    className="w-full pl-11 pr-4 py-3 rounded-xl2 border border-primary-200/60 bg-white/80 backdrop-blur-xs text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-500/15 focus:outline-hidden transition-all font-serif"
                   />
                 </div>
                 <Button type="submit" size="md">{t("home.search")}</Button>

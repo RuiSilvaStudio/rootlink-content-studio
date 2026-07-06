@@ -4,7 +4,7 @@ import { ButtonHTMLAttributes, forwardRef } from "react";
 
 const variants = {
   primary:
-    "bg-primary-600 text-cream hover:bg-primary-700 active:bg-primary-800 shadow-sm hover:shadow-md",
+    "bg-primary-600 text-cream hover:bg-primary-700 active:bg-primary-800 shadow-xs hover:shadow-md",
   secondary:
     "border border-primary-300/60 text-primary-700 hover:border-primary-400 hover:bg-primary-50 dark:border-primary-600/60 dark:text-primary-300 dark:hover:border-primary-500 dark:hover:bg-primary-900/30",
   ghost:
@@ -34,7 +34,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
         className={`
           inline-flex items-center justify-center gap-2
           font-display font-medium tracking-wide
-          transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40
+          transition-all duration-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500/40
           ${variants[variant]} ${sizes[size]}
           ${(disabled || loading) ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:-translate-y-0.5"}
           ${className}

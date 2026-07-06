@@ -61,7 +61,7 @@ export function NavBar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 lg:px-6 h-14 lg:h-16 flex items-center justify-between gap-4 lg:gap-6">
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setDrawerOpen(true)}
               className="lg:hidden p-2 -ml-1.5 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 hover:bg-primary-50/60 dark:hover:bg-primary-900/20 transition-colors"
@@ -81,11 +81,11 @@ export function NavBar() {
             ))}
           </div>
 
-          <div className="flex items-center gap-0.5 flex-shrink-0">
+          <div className="flex items-center gap-0.5 shrink-0">
             <ThemeToggle />
             <Link
               href="/auth/login"
-              className="hidden lg:inline-flex ml-1 px-4 py-1.5 rounded-xl2 bg-primary-600 text-cream text-sm font-display font-semibold hover:bg-primary-500 transition-colors shadow-sm shadow-primary-600/20"
+              className="hidden lg:inline-flex ml-1 px-4 py-1.5 rounded-xl2 bg-primary-600 text-cream text-sm font-display font-semibold hover:bg-primary-500 transition-colors shadow-xs shadow-primary-600/20"
             >
               <span>{t("nav.sign_in")}</span>
             </Link>

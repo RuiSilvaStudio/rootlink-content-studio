@@ -49,7 +49,7 @@ function FooterCol({ heading, children }: { heading: string; children: React.Rea
 
   return (
     <div>
-      <p className="hidden sm:block font-display text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-500 pb-3 border-b border-b-primary-300/50 dark:border-b-primary-700/40 w-fit min-w-[2.5rem] mb-5">
+      <p className="hidden sm:block font-display text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-500 pb-3 border-b border-b-primary-300/50 dark:border-b-primary-700/40 w-fit min-w-10 mb-5">
         {heading}
       </p>
       <button
@@ -136,8 +136,8 @@ function PlatformIndex({ open, onClose }: { open: boolean; onClose: () => void }
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-cream dark:bg-stone-950 flex flex-col overflow-hidden" role="dialog" aria-modal="true" aria-label={t("nav.platform_index")}>
-      <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-800 flex-shrink-0">
+    <div className="fixed inset-0 z-100 bg-cream dark:bg-stone-950 flex flex-col overflow-hidden" role="dialog" aria-modal="true" aria-label={t("nav.platform_index")}>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-800 shrink-0">
         <div className="flex items-center gap-3">
           <span className="font-display text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-primary-500">RootLink</span>
           <span className="font-display text-base font-semibold text-stone-800 dark:text-stone-100">{t("nav.platform_index")}</span>
@@ -151,7 +151,7 @@ function PlatformIndex({ open, onClose }: { open: boolean; onClose: () => void }
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {cards.map((card) => (
             <article key={card.id} className="relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-lg dark:hover:shadow-black/30 group">
-              <span className="absolute top-4 right-4 font-display text-[2.25rem] font-light leading-none text-stone-900/[0.04] dark:text-white/[0.04]">{card.num}</span>
+              <span className="absolute top-4 right-4 font-display text-[2.25rem] font-light leading-none text-stone-900/4 dark:text-white/4">{card.num}</span>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">{card.emoji}</span>
                 <h3 className="font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-stone-600 dark:text-stone-200">{card.label}</h3>
@@ -161,7 +161,7 @@ function PlatformIndex({ open, onClose }: { open: boolean; onClose: () => void }
                 {card.links.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} onClick={onClose} className="flex items-center gap-2 text-[0.875rem] text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">
-                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: card.gc }} />
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: card.gc }} />
                       {link.label}
                     </Link>
                   </li>
@@ -171,7 +171,7 @@ function PlatformIndex({ open, onClose }: { open: boolean; onClose: () => void }
           ))}
 
           <article className="relative bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-6 col-span-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-lg dark:hover:shadow-black/30">
-            <span className="absolute top-4 right-4 font-display text-[2.25rem] font-light leading-none text-stone-900/[0.04] dark:text-white/[0.04]">07</span>
+            <span className="absolute top-4 right-4 font-display text-[2.25rem] font-light leading-none text-stone-900/4 dark:text-white/4">07</span>
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl">📄</span>
               <h3 className="font-display text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-stone-600 dark:text-stone-200">Info &amp; Legal</h3>
@@ -202,7 +202,7 @@ export function Footer() {
           <div className="grid sm:grid-cols-3 gap-6 sm:gap-12">
             <div>
               <Link href="/" className="inline-flex items-center gap-2.5 mb-4 group" aria-label="RootLink — home">
-                <div className="w-7 h-7 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-primary-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f8f6f2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                   </svg>
@@ -235,11 +235,11 @@ export function Footer() {
                 { href: "/learning", key: "nav.learning" },
                 { href: "/tools", key: "nav.tools" },
               ].map(({ href, key }) => (
-                <Link key={href} href={href} className="block text-[0.9375rem] text-stone-600 dark:text-stone-400 py-[0.4375rem] leading-snug hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
+                <Link key={href} href={href} className="block text-[0.9375rem] text-stone-600 dark:text-stone-400 py-1.75 leading-snug hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
                   {t(key)}
                 </Link>
               ))}
-              <a href="https://github.com/RuiSilvaStudio/RootLink" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[0.9375rem] text-stone-600 dark:text-stone-400 py-[0.4375rem] hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
+              <a href="https://github.com/RuiSilvaStudio/RootLink" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[0.9375rem] text-stone-600 dark:text-stone-400 py-1.75 hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
                 {t("nav.source_code")}
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -254,7 +254,7 @@ export function Footer() {
                 { href: "/groups", key: "nav.groups" },
                 { href: "/network", key: "nav.network" },
               ].map(({ href, key }) => (
-                <Link key={href} href={href} className="block text-[0.9375rem] text-stone-600 dark:text-stone-400 py-[0.4375rem] leading-snug hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
+                <Link key={href} href={href} className="block text-[0.9375rem] text-stone-600 dark:text-stone-400 py-1.75 leading-snug hover:text-primary-700 dark:hover:text-primary-300 transition-colors font-serif">
                   {t(key)}
                 </Link>
               ))}

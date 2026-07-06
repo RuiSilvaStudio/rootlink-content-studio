@@ -1,51 +1,415 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Source+Serif+4:opsz,wght@8..60,300..700&display=swap');
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
 
 /*
- * Default palette values -- exactly matching RootLink's real hand-tuned
- * hex colors (see tailwind.config.ts for why these are RGB triplets, not
- * hex). These are overridden at runtime by Content Studio's active Theme
- * (see lib/theme-vars.ts); until then, this is what renders, so the site
- * looks identical to production with no Theme applied at all.
+ * Runtime-themeable colors, Tailwind v4.
+ *
+ * v4 exposes every `@theme` token as a real, native CSS custom property and
+ * natively supports opacity modifiers (`bg-primary-100/60`) on any color
+ * value via `color-mix()` -- so unlike the v3 setup this replaced, there's
+ * no need for a `rgb(var(...) / <alpha-value>)` wrapper or RGB-triplet
+ * storage format anymore. Plain hex works.
+ *
+ * IMPORTANT: each `@theme` color token is deliberately aliased to a
+ * separate `--rl-*` source variable (defined in `:root` below) instead of
+ * being assigned a literal value directly. `@theme` entries become real
+ * global custom properties themselves, so if we'd named the source
+ * variable the same as the theme token (e.g. both called
+ * `--color-primary-50`), it becomes self-referential and silently resolves
+ * to nothing -- exactly what happened when `@tailwindcss/upgrade` first
+ * auto-migrated this file. The indirection through `--rl-*` is what makes
+ * `ThemeVarsInjector` overriding `--rl-primary-50` etc. at runtime actually
+ * take effect.
+ */
+@theme {
+  --font-display: Fraunces, Georgia, serif;
+  --font-serif: Source Serif 4, Georgia, serif;
+
+  --color-primary-50: var(--rl-primary-50);
+  --color-primary-100: var(--rl-primary-100);
+  --color-primary-200: var(--rl-primary-200);
+  --color-primary-300: var(--rl-primary-300);
+  --color-primary-400: var(--rl-primary-400);
+  --color-primary-500: var(--rl-primary-500);
+  --color-primary-600: var(--rl-primary-600);
+  --color-primary-700: var(--rl-primary-700);
+  --color-primary-800: var(--rl-primary-800);
+  --color-primary-900: var(--rl-primary-900);
+
+  --color-earth-50: var(--rl-earth-50);
+  --color-earth-100: var(--rl-earth-100);
+  --color-earth-200: var(--rl-earth-200);
+  --color-earth-300: var(--rl-earth-300);
+  --color-earth-400: var(--rl-earth-400);
+  --color-earth-500: var(--rl-earth-500);
+  --color-earth-600: var(--rl-earth-600);
+  --color-earth-700: var(--rl-earth-700);
+  --color-earth-800: var(--rl-earth-800);
+  --color-earth-900: var(--rl-earth-900);
+
+  --color-rust-50: var(--rl-rust-50);
+  --color-rust-100: var(--rl-rust-100);
+  --color-rust-200: var(--rl-rust-200);
+  --color-rust-300: var(--rl-rust-300);
+  --color-rust-400: var(--rl-rust-400);
+  --color-rust-500: var(--rl-rust-500);
+  --color-rust-600: var(--rl-rust-600);
+  --color-rust-700: var(--rl-rust-700);
+  --color-rust-800: var(--rl-rust-800);
+  --color-rust-900: var(--rl-rust-900);
+
+  --color-cream: var(--rl-cream);
+
+  --radius-xl2: 16px;
+
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-fade-in-up: fade-in-up 0.7s ease-out forwards;
+  --animate-slide-in-left: slide-in-left 0.5s ease-out forwards;
+  --animate-scale-in: scale-in 0.4s ease-out forwards;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-count-up: count-up 0.3s ease-out;
+  --animate-reveal-line: reveal-line 1s ease-out 0.3s forwards;
+  --animate-shimmer: shimmer 1.8s ease-in-out infinite;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes scale-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  @keyframes count-up {
+    0% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes reveal-line {
+    0% {
+      transform: scaleX(0);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility search-highlight {
+  @apply bg-primary-200/40 px-1 rounded-sm;
+}
+
+@utility nav-glass {
+  @apply bg-cream/80 backdrop-blur-md border-b border-primary-200/30;
+
+  .dark & {
+    @apply bg-stone-950/80 border-primary-800/40;
+  }
+}
+
+@utility dark {
+  & .nav-glass {
+    @apply bg-stone-950/80 border-primary-800/40;
+  }
+
+  & .hero-grad {
+    background:
+      radial-gradient(
+        ellipse 90% 60% at 25% 0%,
+        rgba(122, 96, 64, 0.12) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 50% 40% at 75% 100%,
+        rgba(196, 176, 152, 0.06) 0%,
+        transparent 50%
+      );
+  }
+
+  & .noise-bg {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+  }
+
+  & .card-lift {
+    @apply bg-stone-900 border-primary-800/40;
+  }
+
+  & .card-lift:hover {
+    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.3);
+    @apply border-primary-700/50;
+  }
+
+  & .glass-card {
+    @apply bg-stone-900/70 border-stone-700/50;
+  }
+
+  & .card-plain {
+    @apply bg-stone-900 border-primary-800/30;
+  }
+}
+
+@utility hero-grad {
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 25% 0%,
+      rgba(122, 96, 64, 0.06) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 75% 100%,
+      rgba(196, 176, 152, 0.08) 0%,
+      transparent 50%
+    );
+
+  .dark & {
+    background:
+      radial-gradient(
+        ellipse 90% 60% at 25% 0%,
+        rgba(122, 96, 64, 0.12) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 50% 40% at 75% 100%,
+        rgba(196, 176, 152, 0.06) 0%,
+        transparent 50%
+      );
+  }
+}
+
+@utility noise-bg {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+
+  .dark & {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+  }
+}
+
+@utility editorial-rule {
+  @apply w-16 h-0.5 bg-primary-300 rounded-full;
+}
+
+@utility editorial-rule-long {
+  @apply w-24 h-0.5 bg-primary-300 rounded-full;
+}
+
+@utility card-lift {
+  @apply bg-white border border-primary-200/60 rounded-xl2 transition-all duration-300 ease-out;
+
+  .dark & {
+    @apply bg-stone-900 border-primary-800/40;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px -8px rgba(122, 96, 64, 0.1);
+    @apply border-primary-300/50;
+  }
+
+  .dark &:hover {
+    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.3);
+    @apply border-primary-700/50;
+  }
+}
+
+@utility glass-card {
+  @apply bg-white/70 backdrop-blur-[10px] border border-white/70 rounded-2xl;
+
+  .dark & {
+    @apply bg-stone-900/70 border-stone-700/50;
+  }
+}
+
+@utility card-plain {
+  @apply bg-white border border-primary-200/50 rounded-xl2;
+
+  .dark & {
+    @apply bg-stone-900 border-primary-800/30;
+  }
+}
+
+@utility ornament {
+  @apply flex items-center gap-3 text-primary-300 select-none;
+
+  &::before {
+    content: '';
+    @apply block h-px flex-1 bg-primary-200/60;
+  }
+
+  &::after {
+    content: '';
+    @apply block h-px flex-1 bg-primary-200/60;
+  }
+}
+
+@utility drop-cap {
+  &::first-letter {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: 3.5em;
+    line-height: 0.8;
+    @apply text-primary-600 float-left mr-3 mt-1;
+    font-variation-settings:
+      'SOFT' 30,
+      'WONK' 0;
+  }
+}
+
+@utility number-lg {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 300;
+  font-variation-settings:
+    'SOFT' 100,
+    'WONK' 0;
+  @apply text-primary-600;
+}
+
+@utility liquid-glass {
+  background: rgba(79, 61, 42, 0.55);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 32px -4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@utility liquid-glass-pill {
+  background: rgba(248, 246, 242, 0.82);
+  backdrop-filter: blur(40px) saturate(1.4);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    4px 6px 16px -2px rgba(79, 61, 42, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@utility liquid-glass-drawer {
+  background: rgba(248, 246, 242, 0.88);
+  backdrop-filter: blur(40px) saturate(1.3);
+  -webkit-backdrop-filter: blur(40px) saturate(1.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    8px 0 32px -4px rgba(79, 61, 42, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/*
+ * Default palette source values -- exactly matching RootLink's real
+ * hand-tuned hex colors. Plain hex now (v4; see the comment on `@theme`
+ * above for why these went from RGB triplets to hex, and why they're
+ * `--rl-*` and not `--color-*`). Overridden at runtime by Content Studio's
+ * active Theme (see components/ThemeVarsInjector.tsx); until then, this is
+ * what renders, so the site looks identical to production with no theme
+ * applied at all.
  */
 :root {
-  --color-primary-50: 243 240 235;
-  --color-primary-100: 227 221 208;
-  --color-primary-200: 202 189 166;
-  --color-primary-300: 173 154 122;
-  --color-primary-400: 145 122 86;
-  --color-primary-500: 122 96 64;
-  --color-primary-600: 99 77 51;
-  --color-primary-700: 79 61 42;
-  --color-primary-800: 61 47 33;
-  --color-primary-900: 41 31 22;
+  --rl-primary-50: #f3f0eb;
+  --rl-primary-100: #e3ddd0;
+  --rl-primary-200: #cabda6;
+  --rl-primary-300: #ad9a7a;
+  --rl-primary-400: #917a56;
+  --rl-primary-500: #7a6040;
+  --rl-primary-600: #634d33;
+  --rl-primary-700: #4f3d2a;
+  --rl-primary-800: #3d2f21;
+  --rl-primary-900: #291f16;
 
-  --color-earth-50: 245 240 234;
-  --color-earth-100: 232 221 208;
-  --color-earth-200: 212 192 168;
-  --color-earth-300: 187 160 128;
-  --color-earth-400: 166 132 94;
-  --color-earth-500: 140 107 72;
-  --color-earth-600: 112 85 58;
-  --color-earth-700: 90 67 46;
-  --color-earth-800: 69 51 36;
-  --color-earth-900: 46 34 24;
+  --rl-earth-50: #f5f0ea;
+  --rl-earth-100: #e8ddd0;
+  --rl-earth-200: #d4c0a8;
+  --rl-earth-300: #bba080;
+  --rl-earth-400: #a6845e;
+  --rl-earth-500: #8c6b48;
+  --rl-earth-600: #70553a;
+  --rl-earth-700: #5a432e;
+  --rl-earth-800: #453324;
+  --rl-earth-900: #2e2218;
 
-  --color-rust-50: 249 240 236;
-  --color-rust-100: 240 220 209;
-  --color-rust-200: 224 190 168;
-  --color-rust-300: 207 155 122;
-  --color-rust-400: 192 125 83;
-  --color-rust-500: 168 100 61;
-  --color-rust-600: 139 80 50;
-  --color-rust-700: 113 64 41;
-  --color-rust-800: 92 52 34;
-  --color-rust-900: 74 42 28;
+  --rl-rust-50: #f9f0ec;
+  --rl-rust-100: #f0dcd1;
+  --rl-rust-200: #e0bea8;
+  --rl-rust-300: #cf9b7a;
+  --rl-rust-400: #c07d53;
+  --rl-rust-500: #a8643d;
+  --rl-rust-600: #8b5032;
+  --rl-rust-700: #714029;
+  --rl-rust-800: #5c3422;
+  --rl-rust-900: #4a2a1c;
 
-  --color-cream: 248 246 242;
+  --rl-cream: #f8f6f2;
 }
 
 @layer base {
@@ -68,7 +432,7 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-primary-500/40 ring-offset-2 ring-offset-cream;
+    @apply outline-hidden ring-2 ring-primary-500/40 ring-offset-2 ring-offset-cream;
   }
 
   .dark :focus-visible {
@@ -108,141 +472,6 @@
 
   .dark blockquote {
     @apply text-primary-300;
-  }
-}
-
-@layer components {
-  .search-highlight {
-    @apply bg-primary-200/40 px-1 rounded;
-  }
-
-  .nav-glass {
-    @apply bg-cream/80 backdrop-blur-[12px] border-b border-primary-200/30;
-  }
-
-  .dark .nav-glass {
-    @apply bg-stone-950/80 border-primary-800/40;
-  }
-
-  .hero-grad {
-    background:
-      radial-gradient(ellipse 90% 60% at 25% 0%, rgba(122,96,64,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 75% 100%, rgba(196,176,152,0.08) 0%, transparent 50%);
-  }
-
-  .dark .hero-grad {
-    background:
-      radial-gradient(ellipse 90% 60% at 25% 0%, rgba(122,96,64,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 75% 100%, rgba(196,176,152,0.06) 0%, transparent 50%);
-  }
-
-  .noise-bg {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-  }
-
-  .dark .noise-bg {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
-  }
-
-  .editorial-rule {
-    @apply w-16 h-0.5 bg-primary-300 rounded-full;
-  }
-
-  .editorial-rule-long {
-    @apply w-24 h-0.5 bg-primary-300 rounded-full;
-  }
-
-  .card-lift {
-    @apply bg-white border border-primary-200/60 rounded-xl2 transition-all duration-300 ease-out;
-  }
-
-  .dark .card-lift {
-    @apply bg-stone-900 border-primary-800/40;
-  }
-
-  .card-lift:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px -8px rgba(122, 96, 64, 0.1);
-    @apply border-primary-300/50;
-  }
-
-  .dark .card-lift:hover {
-    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.3);
-    @apply border-primary-700/50;
-  }
-
-  .glass-card {
-    @apply bg-white/70 backdrop-blur-[10px] border border-white/70 rounded-2xl;
-  }
-
-  .dark .glass-card {
-    @apply bg-stone-900/70 border-stone-700/50;
-  }
-
-  .card-plain {
-    @apply bg-white border border-primary-200/50 rounded-xl2;
-  }
-
-  .dark .card-plain {
-    @apply bg-stone-900 border-primary-800/30;
-  }
-
-  .ornament {
-    @apply flex items-center gap-3 text-primary-300 select-none;
-  }
-
-  .ornament::before,
-  .ornament::after {
-    content: "";
-    @apply block h-px flex-1 bg-primary-200/60;
-  }
-
-  .drop-cap::first-letter {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 700;
-    font-size: 3.5em;
-    line-height: 0.8;
-    @apply text-primary-600 float-left mr-3 mt-1;
-    font-variation-settings: "SOFT" 30, "WONK" 0;
-  }
-
-  .number-lg {
-    font-family: "Fraunces", Georgia, serif;
-    font-weight: 300;
-    font-variation-settings: "SOFT" 100, "WONK" 0;
-    @apply text-primary-600;
-  }
-
-  .liquid-glass {
-    background: rgba(79, 61, 42, 0.55);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-      0 8px 32px -4px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  .liquid-glass-pill {
-    background: rgba(248, 246, 242, 0.82);
-    backdrop-filter: blur(40px) saturate(1.4);
-    -webkit-backdrop-filter: blur(40px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow:
-      4px 6px 16px -2px rgba(79, 61, 42, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  }
-
-  .liquid-glass-drawer {
-    background: rgba(248, 246, 242, 0.88);
-    backdrop-filter: blur(40px) saturate(1.3);
-    -webkit-backdrop-filter: blur(40px) saturate(1.3);
-    border-right: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow:
-      8px 0 32px -4px rgba(79, 61, 42, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 }
 
