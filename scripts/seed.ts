@@ -14,35 +14,33 @@ async function seed() {
   const payload = await getPayload({ config })
 
   // ── Seed fonts ──────────────────────────────────────────
+  // Create all fonts first without fallback references, then wire them up
   const seedFonts = [
     {
       family: 'Fraunces',
       sourceUrl:
         'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&display=swap',
-      fallback: 'Georgia, serif',
+      fallbackFamily: 'Georgia',
     },
     {
       family: 'Source Serif 4',
       sourceUrl:
         'https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300..700&display=swap',
-      fallback: 'Georgia, serif',
+      fallbackFamily: 'Georgia',
     },
     {
       family: 'Inter',
       sourceUrl:
         'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-      fallback: 'ui-sans-serif, system-ui, sans-serif',
     },
     {
       family: 'JetBrains Mono',
       sourceUrl:
         'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap',
-      fallback: 'ui-monospace, monospace',
     },
     {
       family: 'Georgia',
       sourceUrl: '',
-      fallback: 'serif',
     },
   ]
 
@@ -53,9 +51,22 @@ async function seed() {
       fontIds[f.family] = existing.docs[0].id
       payload.logger.info(`Font "${f.family}" already exists (#${fontIds[f.family]})`)
     } else {
-      const created = await payload.create({ collection: 'fonts', data: f })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const created = await (payload.create as any)({ collection: 'fonts', data: { family: f.family, sourceUrl: f.sourceUrl } })
       fontIds[f.family] = created.id
       payload.logger.info(`Created font "${f.family}" (#${created.id})`)
+    }
+  }
+
+  // Wire up fallback relationships in a second pass
+  for (const f of seedFonts) {
+    if (f.fallbackFamily && fontIds[f.fallbackFamily]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (payload.update as any)({
+        collection: 'fonts',
+        id: fontIds[f.family],
+        data: { fallback: fontIds[f.fallbackFamily] },
+      })
     }
   }
 
@@ -190,29 +201,6 @@ async function seed() {
     payload.logger.info('Template "Homepage (example)" already exists, skipping')
   }
 
-  const existingCopy = await payload.find({
-    collection: 'marketing-copy',
-    where: { key: { equals: 'home.hero_title' } },
-    limit: 1,
-  })
-
-  if (existingCopy.docs.length === 0) {
-    await payload.create({
-      collection: 'marketing-copy',
-      data: {
-        key: 'home.hero_title',
-        page: 'Homepage',
-        value: 'Grow resilience, together.',
-        locale: 'en',
-        notes:
-          'Real RootLink key -- the homepage hero headline. Overrides the default "Find what feeds your land" wherever this key is read (the preview-site clone fetches these live).',
-      },
-    })
-    payload.logger.info('Seeded marketing copy: home.hero_title')
-  } else {
-    payload.logger.info('Marketing copy "home.hero_title" already exists, skipping')
-  }
-
   // ── Seed pages ──────────────────────────────────────────
   const existingHome = await payload.find({
     collection: 'pages',
@@ -249,6 +237,36 @@ async function seed() {
     payload.logger.info('Seeded page: Homepage')
   } else {
     payload.logger.info('Page "Homepage" already exists, skipping')
+  }
+
+  // ── Seed marketing copy (after pages, so the page relationship exists) ─
+  const existingCopy = await payload.find({
+    collection: 'marketing-copy',
+    where: { key: { equals: 'home.hero_title' } },
+    limit: 1,
+  })
+
+  if (existingCopy.docs.length === 0) {
+    const homePage = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: '/' } },
+      limit: 1,
+    })
+
+    await payload.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      collection: 'marketing-copy' as any,
+      data: {
+        key: 'home.hero_title',
+        page: homePage.docs[0]?.id || undefined,
+        value: 'Grow resilience, together.',
+        locale: 'en',
+        notes: 'Real RootLink key — overrides the default "Find what feeds your land".',
+      },
+    })
+    payload.logger.info('Seeded marketing copy: home.hero_title')
+  } else {
+    payload.logger.info('Marketing copy "home.hero_title" already exists, skipping')
   }
 
   payload.logger.info('Seed complete.')

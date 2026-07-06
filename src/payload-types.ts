@@ -171,9 +171,9 @@ export interface Font {
    */
   sourceUrl?: string | null;
   /**
-   * Fallback stack, e.g. "Georgia, serif". Both family and fallback are joined into the CSS font-family value.
+   * Font to use if this one fails to load. Usually a system font like Georgia. Leave empty if this font is a system font itself.
    */
-  fallback: string;
+  fallback?: (number | null) | Font;
   updatedAt: string;
   createdAt: string;
 }
@@ -190,7 +190,15 @@ export interface Media {
   /**
    * Helps filter the media library by where an image is used.
    */
-  tag?: ('hero' | 'icon' | 'background' | 'illustration' | 'logo' | 'other') | null;
+  tag?: ('hero' | 'icon' | 'background' | 'illustration' | 'logo' | 'other')[] | null;
+  /**
+   * Title attribute for the <img> tag — shown as a tooltip on hover. Also helps SEO.
+   */
+  title?: string | null;
+  /**
+   * Optional caption displayed below the image.
+   */
+  caption?: string | null;
   /**
    * Optional: where on the site this is used, for future reference.
    */
@@ -220,9 +228,9 @@ export interface MarketingCopy {
    */
   key: string;
   /**
-   * Optional: which page/section this belongs to, for filtering, e.g. "Homepage".
+   * Which page this copy belongs to. Filterable in the list view.
    */
-  page?: string | null;
+  page?: (number | null) | Page;
   value: string;
   locale?: ('en' | 'pt') | null;
   /**
@@ -626,6 +634,8 @@ export interface FontsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   tag?: T;
+  title?: T;
+  caption?: T;
   usageNotes?: T;
   updatedAt?: T;
   createdAt?: T;

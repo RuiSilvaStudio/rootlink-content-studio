@@ -33,18 +33,43 @@ export function PaletteImportExport(props: UIFieldClientProps) {
   const palettePath = path.split('.').slice(0, -1).join('.')
 
   const handleExport = () => {
-    const data = getData()
-    const palette = palettePath
-      .split('.')
-      .reduce<Record<string, unknown> | undefined>(
-        (acc, key) => acc?.[key] as Record<string, unknown> | undefined,
-        data as Record<string, unknown>,
-      )
-    if (!palette) {
-      setStatus('Nothing to export yet.')
+    const data = getData() as Record<string, unknown>
+
+    // Payload's getData() returns a flat object with dot-notation keys
+    // (e.g. "palette.primary.seed"), not nested objects. Build the
+    // palette by extracting all keys under the palette.* prefix.
+    const prefix = palettePath + '.'
+    const paletteData: Record<string, unknown> = {}
+    let hasKeys = false
+    for (const [key, value] of Object.entries(data)) {
+      if (key.startsWith(prefix)) {
+        const subKey = key.slice(prefix.length)
+        paletteData[subKey] = value
+        hasKeys = true
+      }
+    }
+
+    if (!hasKeys) {
+      setStatus('Nothing to export yet — save the page first, then try again.')
       return
     }
-    const { importExport: _omit, ...clean } = palette
+
+    // Convert flat "primary.seed", "primary.scale.s50", etc. back to nested
+    function unflatten(obj: Record<string, unknown>): Record<string, unknown> {
+      const result: Record<string, unknown> = {}
+      for (const [key, value] of Object.entries(obj)) {
+        const parts = key.split('.')
+        let current = result
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!current[parts[i]]) current[parts[i]] = {}
+          current = current[parts[i]] as Record<string, unknown>
+        }
+        current[parts[parts.length - 1]] = value
+      }
+      return result
+    }
+
+    const clean = unflatten(paletteData)
     const blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

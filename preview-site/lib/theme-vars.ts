@@ -10,7 +10,20 @@ type FontDoc = {
   id: number
   family: string
   sourceUrl: string
-  fallback: string
+  fallback?: FontDoc | number | null
+}
+
+function fontStack(font: FontDoc, allFonts: FontDoc[]): string {
+  // Build a CSS font-family stack: fontFamily, fallbackFont, generic
+  const stack = [font.family]
+  const fallbackId = font.fallback ? (typeof font.fallback === 'object' ? font.fallback.id : font.fallback) : null
+  if (fallbackId) {
+    const fb = allFonts.find((f) => f.id === fallbackId)
+    if (fb && fb.family !== font.family) stack.push(fb.family)
+  }
+  // Always add a safe generic at the end
+  stack.push('serif')
+  return stack.join(', ')
 }
 type ThemeDoc = {
   isActive?: boolean
@@ -66,16 +79,30 @@ export async function fetchActiveThemeVars(): Promise<ThemeFontsResult | null> {
       }
     }
 
-    // Font families (relationship fields — with depth=1 they're populated as full Font objects)
+    // Font families (relationship fields — with depth=2 they include the fallback font)
+    // We also need the full font list to resolve fallback chains for CSS font-family stacks
+    const allFontsRes = await fetch(`${base}/api/fonts?limit=50&depth=0`, { cache: 'no-store' })
+    const allFonts: FontDoc[] = allFontsRes.ok ? ((await allFontsRes.json())?.docs || []) : []
+
     const displayFont = theme.fontDisplay
     if (isFontDoc(displayFont)) {
-      vars['--rl-font-display'] = `${displayFont.family}, ${displayFont.fallback}`
+      vars['--rl-font-display'] = fontStack(displayFont, allFonts)
       if (displayFont.sourceUrl) fontUrls.push(displayFont.sourceUrl)
+      const df = displayFont.fallback
+      if (isFontDoc(df) && df.sourceUrl && df.sourceUrl !== displayFont.sourceUrl) {
+        fontUrls.push(df.sourceUrl)
+      }
     }
     const bodyFont = theme.fontBody
     if (isFontDoc(bodyFont)) {
-      vars['--rl-font-serif'] = `${bodyFont.family}, ${bodyFont.fallback}`
-      if (bodyFont.sourceUrl && bodyFont.sourceUrl !== (isFontDoc(theme.fontDisplay) ? theme.fontDisplay.sourceUrl : '')) fontUrls.push(bodyFont.sourceUrl)
+      vars['--rl-font-serif'] = fontStack(bodyFont, allFonts)
+      if (bodyFont.sourceUrl && bodyFont.sourceUrl !== (isFontDoc(theme.fontDisplay) ? theme.fontDisplay.sourceUrl : '')) {
+        fontUrls.push(bodyFont.sourceUrl)
+      }
+      const bf = bodyFont.fallback
+      if (isFontDoc(bf) && bf.sourceUrl && bf.sourceUrl !== bodyFont.sourceUrl && (!isFontDoc(theme.fontDisplay) || bf.sourceUrl !== theme.fontDisplay.sourceUrl)) {
+        fontUrls.push(bf.sourceUrl)
+      }
     }
 
     // Radii

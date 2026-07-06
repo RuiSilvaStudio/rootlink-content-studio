@@ -26,6 +26,7 @@ export const Media: CollectionConfig = {
     {
       name: 'tag',
       type: 'select',
+      hasMany: true,
       options: [
         { label: 'Hero / banner', value: 'hero' },
         { label: 'Icon', value: 'icon' },
@@ -37,6 +38,20 @@ export const Media: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description: 'Helps filter the media library by where an image is used.',
+      },
+    },
+    {
+      name: 'title',
+      type: 'text',
+      admin: {
+        description: 'Title attribute for the <img> tag — shown as a tooltip on hover. Also helps SEO.',
+      },
+    },
+    {
+      name: 'caption',
+      type: 'textarea',
+      admin: {
+        description: 'Optional caption displayed below the image.',
       },
     },
     {

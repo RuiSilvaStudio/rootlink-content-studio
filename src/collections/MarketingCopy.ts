@@ -35,9 +35,11 @@ export const MarketingCopy: CollectionConfig = {
     },
     {
       name: 'page',
-      type: 'text',
+      type: 'relationship',
+      relationTo: 'pages',
+      hasMany: false,
       admin: {
-        description: 'Optional: which page/section this belongs to, for filtering, e.g. "Homepage".',
+        description: 'Which page this copy belongs to. Filterable in the list view.',
       },
     },
     {

@@ -40,10 +40,11 @@ export const Fonts: CollectionConfig = {
     },
     {
       name: 'fallback',
-      type: 'text',
-      required: true,
+      type: 'relationship',
+      relationTo: 'fonts',
+      hasMany: false,
       admin: {
-        description: 'Fallback stack, e.g. "Georgia, serif". Both family and fallback are joined into the CSS font-family value.',
+        description: 'Font to use if this one fails to load. Usually a system font like Georgia. Leave empty if this font is a system font itself.',
       },
     },
   ],
