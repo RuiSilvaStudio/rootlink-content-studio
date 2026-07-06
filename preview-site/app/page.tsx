@@ -13,11 +13,13 @@
  *   both components are no-op passthroughs unless the viewer is a
  *   super_admin in RootLink's own editor mode, which never applies here.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Leaf, TreePine, Wrench, Users, BookOpen, Calendar, CheckSquare, Droplets, Sprout, Bird, Flower, Home as HomeIcon, ArrowRight, Building } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLocale } from "@/lib/locale-context";
+import { RenderBlocks, type Block } from "@/components/blocks/BlockRenderer";
+import { fetchPageBlocks } from "@/lib/page-blocks";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { StatCounter } from "@/components/ui/StatCounter";
@@ -60,6 +62,17 @@ export default function Home() {
   const { t, locale } = useLocale();
   const router = useRouter();
 
+  // Try to load the published homepage from Content Studio. If it has blocks,
+  // render them instead of the hardcoded page content.
+  const [pageBlocks, setPageBlocks] = useState<Block[] | null>(null);
+  const [blocksLoading, setBlocksLoading] = useState(true);
+  useEffect(() => {
+    fetchPageBlocks("/").then((blocks) => {
+      setPageBlocks(blocks);
+      setBlocksLoading(false);
+    }).catch(() => setBlocksLoading(false));
+  }, []);
+
   const stats = SAMPLE_STATS;
   const families = SAMPLE_FAMILIES;
   const recent = SAMPLE_RECENT;
@@ -69,6 +82,12 @@ export default function Home() {
     if (!query.trim()) return;
     router.push(`/search?q=${encodeURIComponent(query.trim())}`);
   };
+
+  if (blocksLoading) return null;
+
+  if (pageBlocks && pageBlocks.length > 0) {
+    return <RenderBlocks blocks={pageBlocks} />;
+  }
 
   return (
     <div>
